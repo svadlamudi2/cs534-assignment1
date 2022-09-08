@@ -1,5 +1,8 @@
 
 #number of the queens and also the size of the board
+import copy
+
+
 N = 4
 
 # create queen by x, y, and weight
@@ -13,19 +16,19 @@ class Queen:
         print(self.x)
         print(self.y)
 
-    def MoveUp(self):
+    def MoveRight(self):
         self.y = self.y + 1
 
-    def MoveDown(self):
+    def MoveLeft(self):
         self.y = self.y - 1
 
-    def MoveLeft(self):
+    def MoveUp(self):
         self.x = self.x - 1
 
-    def MoveRight(self):
+    def MoveDown(self):
         self.x = self.x + 1
 
-
+# board has the current board state
 class Board:
     def __init__(self, N):
         self.cols = N
@@ -34,40 +37,104 @@ class Board:
         self.queens = []
 
     def AddQueen(self, queen):
-        self.queens = []
         self.queens.append(queen)
+        self.UpdateBoard()
 
-    def UpdateQueens(self, queens):
+    def UpdateBoard(self):
         #self.board[x][y] = weight
         #load the queens to the board
-        for i in range(len(queens)):
-            self.board[queens[i].x][queens[i].y] = queens[i].weight
+        self.board = [[0 for i in range(self.cols)] for j in range(self.rows)]
+        for i in range(len(self.queens)):
+            self.board[self.queens[i].x][self.queens[i].y] = self.queens[i].weight
 
     def PrintBoard(self):
         for x in self.board:  # outer loop  
             for i in x:  # inner loop  
                 print(i, end = " ") # print the elements  
-            print()  
+            print() 
 
-#class Tree:
-    #def __init__(self):
+    def PrintQueens(self):
+        for i in range(len(self.queens)):  # outer loop  
+            print(self.queens[i].x) # print the elements  
+            print(self.queens[i].y) 
+
+class Node:
+    def __init__(self, level, board, currentCost, h):
+        self.level = level
+        self.board = board
+        self.currentCost = currentCost
+        self.h = h
+        self.total = currentCost + h
+
         
+class Tree:
+    def __init__(self, startNode):
+        self.tree = []
+        self.tree.append(startNode)
+        #self.frontier  = []
+
+    def AddNode(self, node):
+        self.tree.append(node)
+
+    def CreateNodes(self, parentNode):
+        childNodes = []
+        #********************
+        tmpNode1 = copy.deepcopy(parentNode)
+        tmpNode1.level += 1
+        tmpNode1.board.queens[0].MoveUp()
+        tmpNode1.board.UpdateBoard()
+        childNodes.append(tmpNode1)
+
+
+        tmpNode2 = copy.deepcopy(parentNode)
+        tmpNode2.level += 1
+        tmpNode2.board.queens[0].MoveDown()
+        tmpNode2.board.UpdateBoard()
+        childNodes.append(tmpNode2)
+        #**********************
+        self.tree.extend(childNodes)
+        
+
+    def PrintTree(self):
+        for i in range(len(self.tree)):
+            print(self.tree[i].level)
+            self.tree[i].board.PrintBoard()
+
+        
+#create board
+board = Board(N)
 
 #****************************************************************************************
 #create the queens list
 #need a function to read from file, now I just manuelly input the queen
-queens = []
-queens.append(Queen(0,0,1))
-queens.append(Queen(1,1,2))
-queens.append(Queen(2,2,4))
-queens.append(Queen(3,3,8))
-#*****************************************************************************************
+q1 = Queen(2,1,4)
+q2 = Queen(3,2,1)
 
-#create board
-board = Board(N)
-#place the queens in place
-board.UpdateQueens(queens)
+board.AddQueen(q1)
+board.AddQueen(q2)
+#queens[0].MoveUp()
+#queens.append(Queen(1,1,2))
+#queens.append(Queen(2,2,4))
+#queens.append(Queen(3,3,8))
+#*****************************************************************************************
 
 
 #print the board
-board.PrintBoard()
+#board.PrintBoard()
+#board.PrintQueens()
+
+#create the first node
+startNode = Node(0, board, 0, 0)
+
+#start the tree with the starting node
+tree = Tree(startNode)
+
+#print(tree.tree[0].board.PrintBoard())
+#create next level
+tree.CreateNodes(tree.tree[0])
+
+tree.PrintTree()
+
+
+
+

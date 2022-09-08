@@ -1,6 +1,6 @@
 
-
-N = 4
+#number of the queens and also the size of the board
+N = 5
 
 
 class Queen:

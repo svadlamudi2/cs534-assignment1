@@ -1,6 +1,6 @@
 
 #number of the queens and also the size of the board
-N = 5
+N = 4
 
 # create queen by x, y, and weight
 class Queen:

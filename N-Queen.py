@@ -125,7 +125,7 @@ board.AddQueen(q2)
 
 #print the board
 #board.PrintBoard()
-board.PrintQueens()
+#board.PrintQueens()
 
 #create the first node
 startNode = Node(0, board, 0, 0)

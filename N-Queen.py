@@ -136,6 +136,7 @@ tree = Tree(startNode)
 #print(tree.tree[0].board.PrintBoard())
 #create next level
 tree.CreateNodes(tree.tree[0])
+tree.CreateNodes(tree.tree[2])
 
 tree.PrintTree()
 

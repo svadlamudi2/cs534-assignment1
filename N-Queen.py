@@ -33,7 +33,7 @@ class Board:
     def __init__(self, N):
         self.cols = N
         self.rows = N
-        self.board = [[0 for i in range(self.cols)] for j in range(self.rows)]
+        self.board = [[0 for i in range(self.rows)] for j in range(self.cols)]
         self.queens = []
 
     def AddQueen(self, queen):
@@ -43,7 +43,7 @@ class Board:
     def UpdateBoard(self):
         #self.board[x][y] = weight
         #load the queens to the board
-        self.board = [[0 for i in range(self.cols)] for j in range(self.rows)]
+        self.board = [[0 for i in range(self.rows)] for j in range(self.cols)]
         for i in range(len(self.queens)):
             self.board[self.queens[i].x][self.queens[i].y] = self.queens[i].weight
 
@@ -79,20 +79,24 @@ class Tree:
     def CreateNodes(self, parentNode):
         childNodes = []
         #********************
-        tmpNode1 = copy.deepcopy(parentNode)
-        tmpNode1.level += 1
-        tmpNode1.board.queens[0].MoveUp()
-        tmpNode1.board.UpdateBoard()
-        childNodes.append(tmpNode1)
+        for i in range(len(parentNode.board.queens)):
+            tmpNode1 = copy.deepcopy(parentNode)
+            tmpNode2 = copy.deepcopy(parentNode)
+            tmpNode1.level += 1
+            tmpNode2.level += 1
 
+            if tmpNode1.board.queens[i].x >= 0 and tmpNode2.board.queens[i].x != N-1:     #check if can move down
+                tmpNode1.board.queens[i].MoveDown()
+                tmpNode1.board.UpdateBoard()
+                childNodes.append(copy.deepcopy(tmpNode1))
 
-        tmpNode2 = copy.deepcopy(parentNode)
-        tmpNode2.level += 1
-        tmpNode2.board.queens[0].MoveDown()
-        tmpNode2.board.UpdateBoard()
-        childNodes.append(tmpNode2)
+            if tmpNode2.board.queens[i].x <= N-1 and tmpNode2.board.queens[i].x != 0:     #check if can move up
+                tmpNode2.board.queens[i].MoveUp()
+                tmpNode2.board.UpdateBoard()
+                childNodes.append(copy.deepcopy(tmpNode2))
+
         #**********************
-        self.tree.extend(childNodes)
+        self.tree.extend(copy.deepcopy(childNodes))
         
 
     def PrintTree(self):
@@ -107,8 +111,8 @@ board = Board(N)
 #****************************************************************************************
 #create the queens list
 #need a function to read from file, now I just manuelly input the queen
-q1 = Queen(2,1,4)
-q2 = Queen(3,2,1)
+q1 = Queen(0,1,4)
+q2 = Queen(0,2,1)
 
 board.AddQueen(q1)
 board.AddQueen(q2)
@@ -121,7 +125,7 @@ board.AddQueen(q2)
 
 #print the board
 #board.PrintBoard()
-#board.PrintQueens()
+board.PrintQueens()
 
 #create the first node
 startNode = Node(0, board, 0, 0)

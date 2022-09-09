@@ -2,7 +2,6 @@
 #number of the queens and also the size of the board
 import copy
 
-
 N = 4
 
 # create queen by x, y, and weight
@@ -35,7 +34,8 @@ class Board:
         self.rows = N
         self.board = [[0 for i in range(self.rows)] for j in range(self.cols)]
         self.queens = []
-        self.done = False
+        self.UnsafeQueens =[]
+        self.safe = False
 
     def AddQueen(self, queen):
         self.queens.append(queen)
@@ -47,6 +47,7 @@ class Board:
         self.board = [[0 for i in range(self.rows)] for j in range(self.cols)]
         for i in range(len(self.queens)):
             self.board[self.queens[i].x][self.queens[i].y] = self.queens[i].weight
+        self.CheckBoard()
 
     def PrintBoard(self):
         for x in self.board:  # outer loop  
@@ -59,14 +60,15 @@ class Board:
             for j in range(len(self.queens)):
                 if ((self.queens[i].x == self.queens[j].x and i != j) 
                     or (self.queens[i].y == self.queens[j].y and i != j) 
-                    or ((self.queens[i].x - self.queens[j].x) == (self.queens[i].y - self.queens[j].y))
-                    or ((self.queens[i].x - self.queens[j].x) == -(self.queens[i].y - self.queens[j].y))):
-                        self.doen = False                       
+                    or ((self.queens[i].x - self.queens[j].x) == (self.queens[i].y - self.queens[j].y) and (i != j))
+                    or ((self.queens[i].x - self.queens[j].x) == -(self.queens[i].y - self.queens[j].y)and (i != j))):
+                        self.UnsafeQueens.append(self.queens[i])
+        if len(self.UnsafeQueens) == 0:
+            self.safe = True
+        else:
+            self.safe = False
 
-                else:
-                    self.done = True
-        if self.done == True:
-            print("done")
+          
             
 
     def PrintQueens(self):
@@ -78,6 +80,7 @@ class Node:
     def __init__(self, level, board, currentCost, h):
         self.level = level
         self.board = board
+        self.isFrontier = True
         self.currentCost = currentCost
         self.h = h
         self.total = currentCost + h
@@ -87,12 +90,11 @@ class Tree:
     def __init__(self, startNode):
         self.tree = []
         self.tree.append(startNode)
-        #self.frontier  = []
 
     def AddNode(self, node):
         self.tree.append(node)
 
-    def CreateNodes(self, parentNode):
+    def CreateNodesFrom(self, parentNode):
         childNodes = []
         #********************
         for i in range(len(parentNode.board.queens)):
@@ -113,14 +115,16 @@ class Tree:
 
         #**********************
         self.tree.extend(copy.deepcopy(childNodes))
-        
+        parentNode.isFrontier = False
+
 
     def PrintTree(self):
         for i in range(len(self.tree)):
             print(self.tree[i].level)
+            print(self.tree[i].board.safe)
             self.tree[i].board.PrintBoard()
-            self.tree[i].board.CheckBoard()
 
+        
         
 #create board
 board = Board(N)
@@ -128,17 +132,21 @@ board = Board(N)
 #****************************************************************************************
 #create the queens list
 #need a function to read from file, now I just manuelly input the queen
-q1 = Queen(2,2,4)
+q1 = Queen(1,0,4)
 q2 = Queen(2,1,1)
+q3 = Queen(0,2,3)
+q4 = Queen(2,3,2)
 
 board.AddQueen(q1)
 board.AddQueen(q2)
+board.AddQueen(q3)
+board.AddQueen(q4)
+
 #queens[0].MoveUp()
 #queens.append(Queen(1,1,2))
 #queens.append(Queen(2,2,4))
 #queens.append(Queen(3,3,8))
 #*****************************************************************************************
-
 
 #print the board
 #board.PrintBoard()
@@ -146,14 +154,31 @@ board.AddQueen(q2)
 
 #create the first node
 startNode = Node(0, board, 0, 0)
+board.CheckBoard()
+
 
 #start the tree with the starting node
 tree = Tree(startNode)
 
 #print(tree.tree[0].board.PrintBoard())
-#create next level
-tree.CreateNodes(tree.tree[0])
-tree.CreateNodes(tree.tree[2])
+
+notDone = True
+flag = 0
+
+
+"""
+while flag != 1:
+    for i in range(len(tree.tree)):
+        if tree.tree[i].board.safe == True:
+            notDone = False
+            break
+
+        elif (tree.tree[i].board.safe == False) and (tree.tree[i].isFrontier):
+            tree.CreateNodesFrom(tree.tree[i])
+flag += 1
+"""
+
+
 
 tree.PrintTree()
 

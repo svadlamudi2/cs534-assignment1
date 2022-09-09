@@ -52,6 +52,15 @@ class Board:
             for i in x:  # inner loop  
                 print(i, end = " ") # print the elements  
             print() 
+    
+    def BoardisSafe(self):
+        for i in range(len(self.queens)):
+            for j in range(len(self.queens)):
+                if ((self.queens[i].x == self.queens[j].x and i != j) or (self.queens[i].y == self.queens[j].y and i != j)):
+                    print("safe")
+
+                    
+            
 
     def PrintQueens(self):
         for i in range(len(self.queens)):  # outer loop  
@@ -103,6 +112,7 @@ class Tree:
         for i in range(len(self.tree)):
             print(self.tree[i].level)
             self.tree[i].board.PrintBoard()
+            self.tree[i].board.BoardisSafe()
 
         
 #create board
@@ -111,8 +121,8 @@ board = Board(N)
 #****************************************************************************************
 #create the queens list
 #need a function to read from file, now I just manuelly input the queen
-q1 = Queen(0,1,4)
-q2 = Queen(0,2,1)
+q1 = Queen(2,2,4)
+q2 = Queen(2,1,1)
 
 board.AddQueen(q1)
 board.AddQueen(q2)

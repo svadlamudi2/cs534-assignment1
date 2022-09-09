@@ -3,5 +3,5 @@ import Board
 
 board = Board.Board()
 
-print(board.board)
+print(board.findAllQueens())
 

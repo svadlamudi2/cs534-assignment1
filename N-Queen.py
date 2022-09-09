@@ -35,6 +35,7 @@ class Board:
         self.rows = N
         self.board = [[0 for i in range(self.rows)] for j in range(self.cols)]
         self.queens = []
+        self.done = False
 
     def AddQueen(self, queen):
         self.queens.append(queen)
@@ -53,13 +54,19 @@ class Board:
                 print(i, end = " ") # print the elements  
             print() 
     
-    def BoardisSafe(self):
+    def CheckBoard(self):
         for i in range(len(self.queens)):
             for j in range(len(self.queens)):
-                if ((self.queens[i].x == self.queens[j].x and i != j) or (self.queens[i].y == self.queens[j].y and i != j)):
-                    print("safe")
+                if ((self.queens[i].x == self.queens[j].x and i != j) 
+                    or (self.queens[i].y == self.queens[j].y and i != j) 
+                    or ((self.queens[i].x - self.queens[j].x) == (self.queens[i].y - self.queens[j].y))
+                    or ((self.queens[i].x - self.queens[j].x) == -(self.queens[i].y - self.queens[j].y))):
+                        self.doen = False                       
 
-                    
+                else:
+                    self.done = True
+        if self.done == True:
+            print("done")
             
 
     def PrintQueens(self):
@@ -112,7 +119,7 @@ class Tree:
         for i in range(len(self.tree)):
             print(self.tree[i].level)
             self.tree[i].board.PrintBoard()
-            self.tree[i].board.BoardisSafe()
+            self.tree[i].board.CheckBoard()
 
         
 #create board

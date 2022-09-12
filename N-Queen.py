@@ -47,13 +47,13 @@ class Board:
         self.board = [[0 for i in range(self.rows)] for j in range(self.cols)]
         for i in range(len(self.queens)):
             self.board[self.queens[i].x][self.queens[i].y] = self.queens[i].weight
-        self.CheckBoard()
 
     def PrintBoard(self):
         for x in self.board:  # outer loop  
             for i in x:  # inner loop  
                 print(i, end = " ") # print the elements  
-            print() 
+            print()
+        print(self.safe) 
     
     def CheckBoard(self):
         for i in range(len(self.queens)):
@@ -80,49 +80,62 @@ class Node:
     def __init__(self, level, board, currentCost, h):
         self.level = level
         self.board = board
-        self.isFrontier = True
         self.currentCost = currentCost
         self.h = h
         self.total = currentCost + h
+    
+    def PrintNode(self):
+        print(self.level)
+        self.board.PrintBoard()
+
 
         
 class Tree:
     def __init__(self, startNode):
         self.tree = []
         self.tree.append(startNode)
+        self.frontier = []
+        self.frontier.append(startNode)
 
     def AddNode(self, node):
         self.tree.append(node)
 
     def CreateNodesFrom(self, parentNode):
+        self.frontier.remove(parentNode)
         childNodes = []
         #********************
         for i in range(len(parentNode.board.queens)):
             tmpNode1 = copy.deepcopy(parentNode)
             tmpNode2 = copy.deepcopy(parentNode)
-            tmpNode1.level += 1
-            tmpNode2.level += 1
 
             if tmpNode1.board.queens[i].x >= 0 and tmpNode2.board.queens[i].x != N-1:     #check if can move down
+                tmpNode1.level += 1
                 tmpNode1.board.queens[i].MoveDown()
                 tmpNode1.board.UpdateBoard()
+                tmpNode1.board.CheckBoard()
                 childNodes.append(copy.deepcopy(tmpNode1))
+                tmpNode1.PrintNode()
 
             if tmpNode2.board.queens[i].x <= N-1 and tmpNode2.board.queens[i].x != 0:     #check if can move up
+                tmpNode2.level += 1
                 tmpNode2.board.queens[i].MoveUp()
                 tmpNode2.board.UpdateBoard()
+                tmpNode2.board.CheckBoard()
                 childNodes.append(copy.deepcopy(tmpNode2))
+                tmpNode2.PrintNode()
+
 
         #**********************
         self.tree.extend(copy.deepcopy(childNodes))
-        parentNode.isFrontier = False
+        self.frontier.extend(copy.deepcopy(childNodes))
 
-
+    """
     def PrintTree(self):
         for i in range(len(self.tree)):
             print(self.tree[i].level)
             print(self.tree[i].board.safe)
             self.tree[i].board.PrintBoard()
+    """
 
         
         
@@ -151,36 +164,44 @@ board.AddQueen(q4)
 #print the board
 #board.PrintBoard()
 #board.PrintQueens()
+board.UpdateBoard()
+board.CheckBoard()
 
 #create the first node
 startNode = Node(0, board, 0, 0)
-board.CheckBoard()
+
 
 
 #start the tree with the starting node
 tree = Tree(startNode)
 
-#print(tree.tree[0].board.PrintBoard())
+#tree.tree[0].PrintNode()
+
+for i in range(len(tree.frontier)):
+    tree.frontier[i].board.CheckBoard()
+    tree.frontier[i].PrintNode()
+
+tree.CreateNodesFrom(tree.frontier[0])
+
+for i in range(len(tree.frontier)):
+    tree.frontier[i].board.CheckBoard()
+    tree.frontier[i].PrintNode()
+
 
 notDone = True
-flag = 0
-
 
 """
-while flag != 1:
-    for i in range(len(tree.tree)):
-        if tree.tree[i].board.safe == True:
+while notDone:
+    for i in range(len(tree.frontier)):
+        tree.frontier[i].board.CheckBoard()
+        if tree.frontier[i].board.safe == True:
+            tree.frontier[i].PrintNode()
             notDone = False
             break
 
-        elif (tree.tree[i].board.safe == False) and (tree.tree[i].isFrontier):
-            tree.CreateNodesFrom(tree.tree[i])
-flag += 1
+        else:
+            tree.CreateNodesFrom(tree.frontier[i])
 """
-
-
-
-tree.PrintTree()
 
 
 

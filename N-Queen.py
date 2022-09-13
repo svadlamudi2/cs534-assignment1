@@ -3,6 +3,7 @@
 import copy
 
 N = 4
+Counter = 0
 
 # create queen by x, y, and weight
 class Queen:
@@ -37,6 +38,7 @@ class Board:
         self.UnsafeQueens =[]
         self.safe = False
 
+
     def AddQueen(self, queen):
         self.queens.append(queen)
         self.UpdateBoard()
@@ -53,7 +55,9 @@ class Board:
             for i in x:  # inner loop  
                 print(i, end = " ") # print the elements  
             print()
-        print(self.safe) 
+        global Counter
+        print(self.safe , " " , Counter) 
+        Counter = Counter + 1
     
     def CheckBoard(self):
         for i in range(len(self.queens)):
@@ -66,10 +70,7 @@ class Board:
         if len(self.UnsafeQueens) == 0:
             self.safe = True
         else:
-            self.safe = False
-
-          
-            
+            self.safe = False            
 
     def PrintQueens(self):
         for i in range(len(self.queens)):  # outer loop  
@@ -92,42 +93,37 @@ class Node:
         
 class Tree:
     def __init__(self, startNode):
-        self.tree = []
-        self.tree.append(startNode)
         self.frontier = []
         self.frontier.append(startNode)
+
 
     def AddNode(self, node):
         self.tree.append(node)
 
-    def CreateNodesFrom(self, parentNode):
-        self.frontier.remove(parentNode)
-        childNodes = []
+    def CreateNodesFrom(self, frontier, index):
+        tmpNode = copy.deepcopy(frontier[index])
+        del(self.frontier[index])
         #********************
-        for i in range(len(parentNode.board.queens)):
-            tmpNode1 = copy.deepcopy(parentNode)
-            tmpNode2 = copy.deepcopy(parentNode)
+        for i in range(len(tmpNode.board.queens)):
+            tmpNode1 = copy.deepcopy(tmpNode)
+            tmpNode2 = copy.deepcopy(tmpNode)
 
             if tmpNode1.board.queens[i].x >= 0 and tmpNode2.board.queens[i].x != N-1:     #check if can move down
+                self.frontier.append(tmpNode1)
                 tmpNode1.level += 1
                 tmpNode1.board.queens[i].MoveDown()
                 tmpNode1.board.UpdateBoard()
                 tmpNode1.board.CheckBoard()
-                childNodes.append(copy.deepcopy(tmpNode1))
                 tmpNode1.PrintNode()
 
             if tmpNode2.board.queens[i].x <= N-1 and tmpNode2.board.queens[i].x != 0:     #check if can move up
+                self.frontier.append(tmpNode2)
                 tmpNode2.level += 1
                 tmpNode2.board.queens[i].MoveUp()
                 tmpNode2.board.UpdateBoard()
                 tmpNode2.board.CheckBoard()
-                childNodes.append(copy.deepcopy(tmpNode2))
                 tmpNode2.PrintNode()
-
-
         #**********************
-        self.tree.extend(copy.deepcopy(childNodes))
-        self.frontier.extend(copy.deepcopy(childNodes))
 
     """
     def PrintTree(self):
@@ -136,7 +132,11 @@ class Tree:
             print(self.tree[i].board.safe)
             self.tree[i].board.PrintBoard()
     """
-
+    def PrintFrontier(self):
+        for i in range(len(self.frontier)):
+            print(self.frontier[i].level)
+            print(self.frontier[i].board.safe)
+            self.tree[i].board.PrintBoard()
         
         
 #create board
@@ -146,7 +146,7 @@ board = Board(N)
 #create the queens list
 #need a function to read from file, now I just manuelly input the queen
 q1 = Queen(1,0,4)
-q2 = Queen(2,1,1)
+q2 = Queen(3,1,1)
 q3 = Queen(0,2,3)
 q4 = Queen(2,3,2)
 
@@ -162,7 +162,7 @@ board.AddQueen(q4)
 #*****************************************************************************************
 
 #print the board
-#board.PrintBoard()
+board.PrintBoard()
 #board.PrintQueens()
 board.UpdateBoard()
 board.CheckBoard()
@@ -177,14 +177,13 @@ tree = Tree(startNode)
 
 #tree.tree[0].PrintNode()
 
-for i in range(len(tree.frontier)):
+"""for i in range(len(tree.frontier)):
     tree.frontier[i].board.CheckBoard()
-    tree.frontier[i].PrintNode()
+    tree.frontier[i].PrintNode()"""
 
-tree.CreateNodesFrom(tree.frontier[0])
+tree.CreateNodesFrom(tree.frontier, 0)
 
 for i in range(len(tree.frontier)):
-    tree.frontier[i].board.CheckBoard()
     tree.frontier[i].PrintNode()
 
 

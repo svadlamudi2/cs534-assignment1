@@ -186,9 +186,7 @@ class Tree:
     """
     def PrintFrontier(self):
         for i in range(len(self.frontier)):
-            print(self.frontier[i].level)
-            print(self.frontier[i].board.safe)
-            self.tree[i].board.PrintBoard()
+            self.frontier[i].PrintNode()
         
         
 #create board
@@ -217,7 +215,7 @@ board.AddQueen(q4)
 #board.PrintQueens()
 board.UpdateBoard()
 board.CheckBoard()
-print("Starting", "unsafeQueens:", len(board.UnsafeQueens)/2,"isSafe?", board.safe)
+print("Starting", "unsafeQueens:", len(board.UnsafeQueens),"isSafe?", board.safe)
 board.PrintBoard()
 
 

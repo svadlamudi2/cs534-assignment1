@@ -60,6 +60,7 @@ class Board:
         Counter = Counter + 1
     
     def CheckBoard(self):
+        self.UnsafeQueens.clear()
         for i in range(len(self.queens)):
             for j in range(len(self.queens)):
                 if ((self.queens[i].x == self.queens[j].x and i != j) 
@@ -86,7 +87,7 @@ class Node:
         self.total = currentCost + h
     
     def PrintNode(self):
-        print(self.level)
+        print("level:", self.level, "UnsafeQueensNum:",len(self.board.UnsafeQueens))
         self.board.PrintBoard()
 
 
@@ -166,6 +167,7 @@ board.PrintBoard()
 #board.PrintQueens()
 board.UpdateBoard()
 board.CheckBoard()
+print("unsafeQueens:", len(board.UnsafeQueens),"isSafe?", board.safe)
 
 #create the first node
 startNode = Node(0, board, 0, 0)

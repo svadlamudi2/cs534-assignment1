@@ -56,7 +56,7 @@ class Board:
                 print(i, end = " ") # print the elements  
             print()
         global Counter
-        print(self.safe , " " , Counter) 
+        print("Node Number: " , Counter) 
         Counter = Counter + 1
     
     def CheckBoard(self):
@@ -87,7 +87,7 @@ class Node:
         self.total = currentCost + h
     
     def PrintNode(self):
-        print("level:", self.level, "UnsafeQueensNum:",len(self.board.UnsafeQueens))
+        print("level:", self.level, "UnsafeQueensNum:",len(self.board.UnsafeQueens),"issafe?:", self.board.safe)
         self.board.PrintBoard()
 
 
@@ -147,7 +147,7 @@ board = Board(N)
 #create the queens list
 #need a function to read from file, now I just manuelly input the queen
 q1 = Queen(1,0,4)
-q2 = Queen(3,1,1)
+q2 = Queen(2,1,1)
 q3 = Queen(0,2,3)
 q4 = Queen(2,3,2)
 
@@ -163,11 +163,12 @@ board.AddQueen(q4)
 #*****************************************************************************************
 
 #print the board
-board.PrintBoard()
 #board.PrintQueens()
 board.UpdateBoard()
 board.CheckBoard()
-print("unsafeQueens:", len(board.UnsafeQueens),"isSafe?", board.safe)
+print("Starting", "unsafeQueens:", len(board.UnsafeQueens)/2,"isSafe?", board.safe)
+board.PrintBoard()
+
 
 #create the first node
 startNode = Node(0, board, 0, 0)
@@ -185,8 +186,10 @@ tree = Tree(startNode)
 
 tree.CreateNodesFrom(tree.frontier, 0)
 
-for i in range(len(tree.frontier)):
-    tree.frontier[i].PrintNode()
+tree.PrintFrontier()
+
+#for i in range(len(tree.frontier)):
+#    tree.frontier[i].PrintNode()
 
 
 notDone = True

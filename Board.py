@@ -3,29 +3,11 @@ import numpy as np
 
 
 class Board:
-    def __init__(self):
-        file = 'board.txt.csv'
-        rows = 0
-        with open(file, mode='r', encoding='utf-8-sig') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            for row in csv_reader:
-                rows += 1
+    def __init__(self, array):
+        self.dimensions = len(array)
+        self.board = array
 
-        self.board = [[0] * rows for i in range(rows)]
-        self.dimensions = rows
 
-        with open(file, mode='r', encoding='utf-8-sig') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            rowNum = 0
-            for row in csv_reader:
-                colNum = 0
-                for value in row:
-                    if value == '':
-                        self.board[rowNum][colNum] = 0
-                    else:
-                        self.board[rowNum][colNum] = int(value)
-                    colNum += 1
-                rowNum += 1
 
     def printBoard(self):
         for row in self.board:
@@ -150,6 +132,24 @@ class Board:
                 counter += 1
         return counter
 
+    def findPossibleMovesFromBoard(self):
+        possibleMoves = []
+        spacesMoved = 1
+        for location in self.findAllQueens():
+            #Check if it is possible to move queen up without going out of board
+            if not self.outOfGrid(location[0] - spacesMoved, location[1]):
+                calculation = pow(location[2], 2) * spacesMoved
+                possibleMove = [location[0], location[1], location[0] - spacesMoved, location[1], location[2]]
+                possibleMoves.append(possibleMove)
+            #Check if it is possible to move queen down without going out of board
+            if not self.outOfGrid(location[0] + spacesMoved, location[1]):
+                calculation = pow(location[2], 2) * spacesMoved
+                possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
+                possibleMoves.append(possibleMove)
+        return possibleMoves
+
+    #######QUINLIN CODE BELOW
+
     def AddQueen(self, queen):
         self.queens.append(queen)
         self.UpdateBoard()
@@ -248,4 +248,7 @@ class Board:
             return False
         else:
             return True
+
+
+
 

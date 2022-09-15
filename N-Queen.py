@@ -226,7 +226,7 @@ print(board.findAllQueens())
 
 queens = board.findAllQueens()
 
-board.UpdateBoard()
+#board.UpdateBoard()
 # board.CheckBoard()
 print("Starting", "unsafeQueens:", board.findNumQueensAttacking(), "isSafe?", board.isSafe())
 board.PrintBoard()

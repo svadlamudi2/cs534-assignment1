@@ -3,9 +3,10 @@ import numpy as np
 
 
 class Board:
-    def __init__(self, array):
+    def __init__(self, array, level):
         self.dimensions = len(array)
         self.board = array
+        self.level = level
 
     def printBoard(self):
         for row in self.board:
@@ -123,12 +124,12 @@ class Board:
 
         return False
 
-    def findNumQueensAttacking(self):
-        queensArray = self.findAllQueens()
+    def findNumQueensAttacking(self, board):
+        queensArray = board.findAllQueens()
         counter = 0
         for location in queensArray:
-            if self.findHorizontalAttack(location[0]) or self.findVerticalAttack(location[1]) or \
-                    self.findDiagonalAttack(location[0], location[1]):
+            if board.findHorizontalAttack(location[0]) or board.findVerticalAttack(location[1]) or \
+                    board.findDiagonalAttack(location[0], location[1]):
                 counter += 1
         return counter
 
@@ -143,7 +144,6 @@ class Board:
                 possibleMoves.append(possibleMove)
             # Check if it is possible to move queen down without going out of board
             if not self.outOfGrid(location[0] + spacesMoved, location[1]):
-                calculation = pow(location[2], 2) * spacesMoved
                 possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
                 possibleMoves.append(possibleMove)
         return possibleMoves
@@ -243,8 +243,8 @@ class Board:
         print(cost);
         return cost;
 
-    def isSafe(self):
-        if self.findNumQueensAttacking() > 0:
+    def isSafe(self, board):
+        if self.findNumQueensAttacking(board) > 0:
             return False
         else:
             return True

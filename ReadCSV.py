@@ -14,5 +14,3 @@ def readCSV(file):
             data.append(tempList)
 
     return data
-
-print(readCSV('board.csv'))

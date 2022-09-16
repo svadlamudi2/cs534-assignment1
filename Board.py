@@ -7,8 +7,6 @@ class Board:
         self.dimensions = len(array)
         self.board = array
 
-
-
     def printBoard(self):
         for row in self.board:
             print(row)
@@ -38,7 +36,8 @@ class Board:
                 return True
             if self.board[i][col] > 0:
                 counter += 1
-
+        if counter > 1:
+            return True
         return False
 
     def findHorizontalAttack(self, row):
@@ -48,7 +47,8 @@ class Board:
                 return True
             if self.board[row][i] > 0:
                 counter += 1
-
+        if counter > 1:
+            return True
         return False
 
     def findDiagonalAttack(self, row, col):
@@ -136,12 +136,12 @@ class Board:
         possibleMoves = []
         spacesMoved = 1
         for location in self.findAllQueens():
-            #Check if it is possible to move queen up without going out of board
+            # Check if it is possible to move queen up without going out of board
             if not self.outOfGrid(location[0] - spacesMoved, location[1]):
                 calculation = pow(location[2], 2) * spacesMoved
                 possibleMove = [location[0], location[1], location[0] - spacesMoved, location[1], location[2]]
                 possibleMoves.append(possibleMove)
-            #Check if it is possible to move queen down without going out of board
+            # Check if it is possible to move queen down without going out of board
             if not self.outOfGrid(location[0] + spacesMoved, location[1]):
                 calculation = pow(location[2], 2) * spacesMoved
                 possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
@@ -248,7 +248,3 @@ class Board:
             return False
         else:
             return True
-
-
-
-

@@ -82,7 +82,8 @@ elif mode == "4D":
             cost = nextNode[0]
             nextBoard = Board(nextNode[1], nextNode[2])
             cost += nextBoard.findNumQueensAttacking(nextBoard)
-
+            print("Board, Cost:                               ", cost)
+            nextBoard.printBoard()
     #execution time
     et = time.time() - st
     print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
@@ -91,4 +92,3 @@ elif mode == "4D":
     print("Final Node Count: ", nodeCount)
     print("Final Level: ", nextBoard.level)
     nextBoard.printBoard()
-

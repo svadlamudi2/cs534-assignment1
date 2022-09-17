@@ -101,3 +101,13 @@ elif mode == "4D":
         print("Final Node Count: ", nodeCount)
         print("Final Level: ", nextBoard.level)
         nextBoard.printBoard()
+
+    #execution time
+    et = time.time() - st
+    print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
+
+    print("Final Board, Cost: ", cost)
+    print("Final Node Count: ", nodeCount)
+    print("Final Level: ", nextBoard.level)
+    nextBoard.printBoard()
+

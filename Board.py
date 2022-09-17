@@ -1,31 +1,12 @@
-import csv
-import numpy as np
+#import csv
+#import numpy as np
 
 
 class Board:
-    def __init__(self):
-        file = 'board.txt.csv'
-        rows = 0
-        with open(file, mode='r', encoding='utf-8-sig') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            for row in csv_reader:
-                rows += 1
-
-        self.board = [[0] * rows for i in range(rows)]
-        self.dimensions = rows
-
-        with open(file, mode='r', encoding='utf-8-sig') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            rowNum = 0
-            for row in csv_reader:
-                colNum = 0
-                for value in row:
-                    if value == '':
-                        self.board[rowNum][colNum] = 0
-                    else:
-                        self.board[rowNum][colNum] = int(value)
-                    colNum += 1
-                rowNum += 1
+    def __init__(self, array, level):
+        self.dimensions = len(array)
+        self.board = array
+        self.level = level
 
     def printBoard(self):
         for row in self.board:
@@ -49,6 +30,7 @@ class Board:
         else:
             return False
 
+
     def findVerticalAttack(self, col):
         counter = 0
         for i in range(self.dimensions):
@@ -56,7 +38,8 @@ class Board:
                 return True
             if self.board[i][col] > 0:
                 counter += 1
-
+        if counter > 1:
+            return True
         return False
 
     def findHorizontalAttack(self, row):
@@ -66,7 +49,8 @@ class Board:
                 return True
             if self.board[row][i] > 0:
                 counter += 1
-
+        if counter > 1:
+            return True
         return False
 
     def findDiagonalAttack(self, row, col):
@@ -141,14 +125,52 @@ class Board:
 
         return False
 
-    def findNumQueensAttacking(self):
-        queensArray = self.findAllQueens()
+    def findNumQueensAttacking(self, board):
+        queensArray = board.findAllQueens()
         counter = 0
         for location in queensArray:
-            if self.findHorizontalAttack(location[0]) or self.findVerticalAttack(location[1]) or \
-                    self.findDiagonalAttack(location[0], location[1]):
+            if board.findHorizontalAttack(location[0]) or board.findVerticalAttack(location[1]) or \
+                    board.findDiagonalAttack(location[0], location[1]):
                 counter += 1
         return counter
+
+    def findPossibleMovesFromBoard(self):
+        possibleMoves = []
+        spacesMoved = 1
+        for location in self.findAllQueens():
+            # Check if it is possible to move queen up without going out of board
+            if not self.outOfGrid(location[0] - spacesMoved, location[1]):
+                possibleMove = [location[0], location[1], location[0] - spacesMoved, location[1], location[2]]
+                possibleMoves.append(possibleMove)
+            # Check if it is possible to move queen down without going out of board
+            if not self.outOfGrid(location[0] + spacesMoved, location[1]):
+                possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
+                possibleMoves.append(possibleMove)
+        return possibleMoves
+
+    #######QUINLIN CODE BELOW
+
+    def findPossibleMovesFromBoard4D(self):
+        possibleMoves = []
+        spacesMoved = 1
+        for location in self.findAllQueens():
+            # Check if it is possible to move queen up without going out of board
+            if ((not self.outOfGrid(location[0] - spacesMoved, location[1])) and (self.board[location[0] - spacesMoved][location[1]] == 0)):
+                possibleMove = [location[0], location[1], location[0] - spacesMoved, location[1], location[2]]
+                possibleMoves.append(possibleMove)
+            # Check if it is possible to move queen down without going out of board
+            if ((not self.outOfGrid(location[0] + spacesMoved, location[1])) and (self.board[location[0] + spacesMoved][location[1]] == 0)):
+                possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
+                possibleMoves.append(possibleMove)
+            # Check if it is possible to move queen Left without going out of board
+            if ((not self.outOfGrid(location[0], location[1] + spacesMoved)) and (self.board[location[0]][location[1] + spacesMoved] == 0)):
+                possibleMove = [location[0], location[1], location[0], location[1] + spacesMoved, location[2]]
+                possibleMoves.append(possibleMove)
+            # Check if it is possible to move queen Right without going out of board
+            if ((not self.outOfGrid(location[0], location[1] - spacesMoved)) and (self.board[location[0]][location[1] - spacesMoved] == 0)):
+                possibleMove = [location[0], location[1], location[0], location[1] - spacesMoved, location[2]]
+                possibleMoves.append(possibleMove)
+        return possibleMoves
 
     def AddQueen(self, queen):
         self.queens.append(queen)
@@ -243,9 +265,8 @@ class Board:
         print(cost);
         return cost;
 
-    def isSafe(self):
-        if self.findNumQueensAttacking() > 0:
+    def isSafe(self, board):
+        if self.findNumQueensAttacking(board) > 0:
             return False
         else:
             return True
-

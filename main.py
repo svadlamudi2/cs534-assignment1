@@ -143,11 +143,17 @@ elif mode == "HC":
             nextBoard.printBoard()"""
 
         # random start
-        nextBoard = random.choice(startList)
+        nextNode = random.choice(startList)
+        nextBoard = Board(nextNode[1], nextNode[2])
+        cost = nextNode[3]
+
+        #nextBoard.printBoard()
         
         while not nextBoard.isSafe(nextBoard):
+            currentH = nextBoard.board[0][0]
+            #print('currentH: ', currentH)
             level = nextBoard.level
-            for moves in nextBoard.findPossibleMovesFromBoard4D():
+            for moves in nextBoard.findPossibleMovesForQueen():
                 newBoard = deepcopy(nextBoard.board)
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
@@ -156,16 +162,19 @@ elif mode == "HC":
                 heuristic = tempBoard.findNumQueensAttacking(tempBoard) # * 100000000
                 #heuristic = moves[4]
                 spaceMove = moves[5]
-
-                if heuristic <= maxH:
-                    list.append((heuristic, newBoard, 1, (moves[4] ** 2)*spaceMove, spaceMove))
+                list.clear
+                if heuristic <= currentH:
+                    list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
                     #print('spaceMove', spaceMove)
                     nodeCount += 1
 
-                """q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
-                nodeCount += 1"""
+                
+                #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
+                #nodeCount += 1
 
+      
             nextNode = random.choice(list)
+
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
             #print("printing next board with cost: ", cost)

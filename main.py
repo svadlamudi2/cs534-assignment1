@@ -10,6 +10,7 @@ st = time.time()
 #mode = "UD"
 #mode = "4D"
 mode = "HC"
+#mode = "HC4D"
 
 initialBoard = csv.readCSV('board.csv')
 
@@ -135,12 +136,6 @@ elif mode == "HC":
                 startList.append((heuristic, newBoard, 1, (moves[4] ** 2)*spaceMove, spaceMove))
                 #print('spaceMove', spaceMove)
                 nodeCount += 1
-        """for x in range(len(list)):
-            nextNode = list[x]
-            nextBoard = Board(nextNode[1], nextNode[2])
-            cost = nextNode[3]
-            print('printing first cost: ', cost, '  H:', nextNode[0], '  spaceMove:', nextNode[4])
-            nextBoard.printBoard()"""
 
         # random start
         nextNode = random.choice(startList)
@@ -172,52 +167,27 @@ elif mode == "HC":
                 #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 #nodeCount += 1
 
-      
-            nextNode = random.choice(list)
+            if len(list) != 0:
+                nextNode = random.choice(list)
+            else:
+                nextBoard = Board(nextNode[1], nextNode[2])
+                break
 
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
             #print("printing next board with cost: ", cost)
             #nextBoard.printBoard()
 
+        if nextBoard.isSafe(nextBoard):
         # execution time
-        et = time.time() - st
-        print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
-        
-        print("Final Board, Cost: ", cost)
-        print("Final Node Count: ", nodeCount)
-        print("Final Level: ", nextBoard.level)
-        nextBoard.printBoard()
+            
+            
+            print("Final Board, Cost: ", cost)
+            print("Final Node Count: ", nodeCount)
+            print("Final Level: ", nextBoard.level)
+            nextBoard.printBoard()
+        else:
+            print('trapped')
 
-
-
-
-
-
-        """while not nextBoard.isSafe(nextBoard) and not q.empty():
-            level = nextBoard.level
-            for moves in nextBoard.findPossibleMovesFromBoard4D():
-                newBoard = deepcopy(nextBoard.board)
-                newBoard[moves[0]][moves[1]] = 0
-                newBoard[moves[2]][moves[3]] = moves[4]
-                tempBoard = Board(newBoard, 1)
-                # multiple heuristic by * 100000000 to get greedy
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) # * 100000000
-                #heuristic = moves[4]
-                q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
-                nodeCount += 1
-
-            nextNode = q.get()
-            cost = nextNode[3]
-            nextBoard = Board(nextNode[1], nextNode[2])
-            #print("printing next board with cost: ", cost)
-            #nextBoard.printBoard()
-
-        # execution time
-        et = time.time() - st
-        print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
-        
-        print("Final Board, Cost: ", cost)
-        print("Final Node Count: ", nodeCount)
-        print("Final Level: ", nextBoard.level)
-        nextBoard.printBoard()"""
+    et = time.time() - st
+    print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))

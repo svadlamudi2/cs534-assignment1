@@ -134,21 +134,39 @@ class Board:
                 counter += 1
         return counter
 
-    def findPossibleMovesFromBoard(self):
+    def findPossibleMovesFromBoard(self, i):
         possibleMoves = []
         spacesMoved = 1
-        for location in self.findAllQueens():
-            # Check if it is possible to move queen up without going out of board
-            if not self.outOfGrid(location[0] - spacesMoved, location[1]):
-                possibleMove = [location[0], location[1], location[0] - spacesMoved, location[1], location[2]]
-                possibleMoves.append(possibleMove)
-            # Check if it is possible to move queen down without going out of board
-            if not self.outOfGrid(location[0] + spacesMoved, location[1]):
-                possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
-                possibleMoves.append(possibleMove)
+
+        location = self.queenLocations[i]
+
+        # Check if it is possible to move queen up without going out of board
+        if not self.outOfGrid(location[0] - spacesMoved, location[1]):
+            possibleMove = [location[0], location[1], location[0] - spacesMoved, location[1], location[2]]
+            possibleMoves.append(possibleMove)
+        # Check if it is possible to move queen down without going out of board
+        if not self.outOfGrid(location[0] + spacesMoved, location[1]):
+            possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
+            possibleMoves.append(possibleMove)
+            
         return possibleMoves
 
     #######QUINLIN CODE BELOW
+    def findPossibleMovesForQueen(self):
+        possibleMoves = []
+        for location in self.findAllQueens():
+        # Check if it is possible to move queen up without going out of board
+            for spaceMove in range (1, self.dimensions):
+                if not self.outOfGrid(location[0] + spaceMove, location[1]):
+                    possibleMove = [location[0], location[1], location[0] + spaceMove, location[1], location[2], spaceMove]
+                    possibleMoves.append(possibleMove)
+            # Check if it is possible to move queen down without going out of board
+            for spaceMove in range (1, self.dimensions):
+                if not self.outOfGrid(location[0] - spaceMove, location[1]):
+                    possibleMove = [location[0], location[1], location[0] - spaceMove, location[1], location[2], spaceMove]
+                    possibleMoves.append(possibleMove)
+        return possibleMoves
+
 
     def findPossibleMovesFromBoard4D(self):
         possibleMoves = []

@@ -8,8 +8,8 @@ import time
 
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
-mode = "UD"
-#mode = "4D"
+#mode = "UD"
+mode = "4D"
 #mode = "HC"
 #mode = "HC4D"
 
@@ -39,7 +39,7 @@ if mode == "UD":
 
         nextNode = q.get()
         cost = nextNode[3]
-        print('printing first cost: ', cost)
+        #print('printing first cost: ', cost)
         nextBoard = Board(nextNode[1], 1)
 
         while not nextBoard.isSafe(nextBoard) and not q.empty():
@@ -127,7 +127,7 @@ elif mode == "HC":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
-    temperature = (board.dimensions ** 2) * 2
+    temperature = (board.dimensions ** 2) 
 
     if not board.isSafe(board):
         for moves in board.findPossibleMovesForQueen():
@@ -145,7 +145,7 @@ elif mode == "HC":
                 #print('spaceMove', spaceMove)
                 nodeCount += 1
 
-    while not temperature == 0:
+    while not temperature >= 0:
         reStartTimes += 1
         # random start
         nextNode = random.choice(startList)

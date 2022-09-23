@@ -8,6 +8,9 @@ st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
 # mode = "UD"
 mode = "4D"
+dijkstra = 0
+greedy = 100000000
+
 
 initialBoard = csv.readCSV('board.csv')
 
@@ -27,7 +30,7 @@ if mode == "UD":
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
             # multiple heuristic by * 100000000 to get greedy
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000
+            heuristic = tempBoard.findNumQueensAttacking(tempBoard)
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
             nodeCount += 1
 
@@ -44,15 +47,15 @@ if mode == "UD":
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
                 # multiple heuristic by * 100000000 to get greedy
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000
+                heuristic = tempBoard.findNumQueensAttacking(tempBoard)
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 nodeCount += 1
 
             nextNode = q.get()
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
-            print("printing next board with cost: ", cost)
-            nextBoard.printBoard()
+            # print("printing next board with cost: ", cost)
+            # nextBoard.printBoard()
 
         # execution time
         et = time.time() - st
@@ -72,7 +75,7 @@ elif mode == "4D":
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
             # multiple heuristic by * 100000000 to get greedy
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000
+            heuristic = tempBoard.findNumQueensAttacking(tempBoard)
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
             nodeCount += 1
 
@@ -89,15 +92,15 @@ elif mode == "4D":
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
                 # multiple heuristic by * 100000000 to get greedy
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) * 0 # * 100000000
+                heuristic = tempBoard.findNumQueensAttacking(tempBoard)
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 nodeCount += 1
 
             nextNode = q.get()
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
-            print("printing next board with cost: ", cost)
-            nextBoard.printBoard()
+            # print("printing next board with cost: ", cost)
+            # nextBoard.printBoard()
 
         # execution time
         et = time.time() - st

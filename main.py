@@ -9,11 +9,11 @@ import time
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
 #mode = "UD"
-mode = "4D"
-#mode = "HC"
+#mode = "4D"
+mode = "HC"
 #mode = "HC4D"
 
-initialBoard = csv.readCSV('board.csv')
+initialBoard = csv.readCSV('board5.csv')
 
 q = PriorityQueue()
 nodeCount = 0
@@ -30,11 +30,12 @@ if mode == "UD":
             newBoard[moves[0]][moves[1]] = 0
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
+            spaceMove = 1
             # multiple heuristic by * 100000000 to get greedy
             heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
             #heuristic = tempBoard.findNumQueensAttacking(tempBoard) + (moves[4] ** 2)
             #heuristic = moves[4] ** 2
-            q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
+            q.put((heuristic + ((moves[4] ** 2)*spaceMove), newBoard, 1, (moves[4] ** 2)*spaceMove))
             nodeCount += 1
 
         nextNode = q.get()
@@ -49,19 +50,20 @@ if mode == "UD":
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
+                spaceMove = 1
                 # multiple heuristic by * 100000000 to get greedy
                 heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
                 #heuristic = tempBoard.findNumQueensAttacking(tempBoard) + (moves[4] ** 2)
                 #heuristic = moves[4] ** 2
 
-                q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
+                q.put((cost + heuristic + (moves[4] ** 2)*spaceMove, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove))
                 nodeCount += 1
 
             nextNode = q.get()
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
-            #print("printing next board with cost: ", cost)
-            #nextBoard.printBoard()
+            print("printing next board with cost: ", cost)
+            nextBoard.printBoard()
 
         # execution time
         et = time.time() - st
@@ -130,6 +132,7 @@ elif mode == "HC":
     temperature = (board.dimensions ** 2) 
 
     if not board.isSafe(board):
+        # find all possible start position
         for moves in board.findPossibleMovesForQueen():
             newBoard = deepcopy(board.board)
             newBoard[moves[0]][moves[1]] = 0
@@ -140,12 +143,13 @@ elif mode == "HC":
             heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
             #heuristic = moves[4]
             spaceMove = moves[5]
+            #pick better or equal position than now
             if heuristic <= maxH:
                 startList.append((heuristic, newBoard, 1, (moves[4] ** 2)*spaceMove, spaceMove))
                 #print('spaceMove', spaceMove)
                 nodeCount += 1
 
-    while not temperature >= 0:
+    while not temperature == 0:
         reStartTimes += 1
         # random start
         nextNode = random.choice(startList)

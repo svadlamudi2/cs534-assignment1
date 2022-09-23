@@ -1,3 +1,4 @@
+from pdb import Restart
 import random
 import ReadCSV as csv
 from Board import Board
@@ -7,9 +8,9 @@ import time
 
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
-#mode = "UD"
+mode = "UD"
 #mode = "4D"
-mode = "HC"
+#mode = "HC"
 #mode = "HC4D"
 
 initialBoard = csv.readCSV('board.csv')
@@ -121,6 +122,10 @@ elif mode == "HC":
     maxH = board.dimensions
     startList = []
     list = []
+    solutions = PriorityQueue()
+    reStartTimes = 0
+    trappedTimes = 0
+
     if not board.isSafe(board):
         for moves in board.findPossibleMovesForQueen():
             newBoard = deepcopy(board.board)
@@ -137,6 +142,9 @@ elif mode == "HC":
                 #print('spaceMove', spaceMove)
                 nodeCount += 1
 
+    temperature = board.dimensions ** 2
+    while not temperature == 0:
+        reStartTimes += 1
         # random start
         nextNode = random.choice(startList)
         nextBoard = Board(nextNode[1], nextNode[2])
@@ -179,15 +187,26 @@ elif mode == "HC":
             #nextBoard.printBoard()
 
         if nextBoard.isSafe(nextBoard):
-        # execution time
-            
-            
-            print("Final Board, Cost: ", cost)
-            print("Final Node Count: ", nodeCount)
-            print("Final Level: ", nextBoard.level)
-            nextBoard.printBoard()
+            newBoard = deepcopy(nextBoard.board)
+            solutions.put((cost, newBoard, level + 1))   
+            temperature -= 1
         else:
-            print('trapped')
+            #print('trapped')
+            trappedTimes += 1
 
+
+
+
+    bestSolution = solutions.get()
+    cost = bestSolution[0]
+    bestBoard = Board(bestSolution[1], bestSolution[2])
+    print("Final Board, Cost: ", cost)
+    print("Final Node Count: ", nodeCount)
+    print("Final Level: ", bestBoard.level)
+    bestBoard.printBoard()
+
+    # execution time
     et = time.time() - st
     print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
+    print('Restart ', reStartTimes, ' times')
+    print('Trapped ', trappedTimes, ' times')

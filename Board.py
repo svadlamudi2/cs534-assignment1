@@ -134,21 +134,18 @@ class Board:
                 counter += 1
         return counter
 
-    def findPossibleMovesFromBoard(self, i):
+    def findPossibleMovesFromBoard(self):
         possibleMoves = []
         spacesMoved = 1
-
-        location = self.queenLocations[i]
-
-        # Check if it is possible to move queen up without going out of board
-        if not self.outOfGrid(location[0] - spacesMoved, location[1]):
-            possibleMove = [location[0], location[1], location[0] - spacesMoved, location[1], location[2]]
-            possibleMoves.append(possibleMove)
-        # Check if it is possible to move queen down without going out of board
-        if not self.outOfGrid(location[0] + spacesMoved, location[1]):
-            possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
-            possibleMoves.append(possibleMove)
-            
+        for location in self.findAllQueens():
+            # Check if it is possible to move queen up without going out of board
+            if not self.outOfGrid(location[0] - spacesMoved, location[1]):
+                possibleMove = [location[0], location[1], location[0] - spacesMoved, location[1], location[2]]
+                possibleMoves.append(possibleMove)
+            # Check if it is possible to move queen down without going out of board
+            if not self.outOfGrid(location[0] + spacesMoved, location[1]):
+                possibleMove = [location[0], location[1], location[0] + spacesMoved, location[1], location[2]]
+                possibleMoves.append(possibleMove)
         return possibleMoves
 
     #######QUINLIN CODE BELOW

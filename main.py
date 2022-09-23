@@ -8,9 +8,9 @@ import time
 
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
-#mode = "UD"
+mode = "UD"
 #mode = "4D"
-mode = "HC"
+#mode = "HC"
 #mode = "HC4D"
 
 initialBoard = csv.readCSV('board.csv')
@@ -31,8 +31,9 @@ if mode == "UD":
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
             # multiple heuristic by * 100000000 to get greedy
-            #heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
-            heuristic = moves[4] ** 2
+            heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
+            #heuristic = tempBoard.findNumQueensAttacking(tempBoard) + (moves[4] ** 2)
+            #heuristic = moves[4] ** 2
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
             nodeCount += 1
 
@@ -49,8 +50,9 @@ if mode == "UD":
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
                 # multiple heuristic by * 100000000 to get greedy
-                #heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
-                heuristic = moves[4] ** 2
+                heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
+                #heuristic = tempBoard.findNumQueensAttacking(tempBoard) + (moves[4] ** 2)
+                #heuristic = moves[4] ** 2
 
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 nodeCount += 1
@@ -170,8 +172,7 @@ elif mode == "HC":
                     list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
                     #print('spaceMove', spaceMove)
                     nodeCount += 1
-
-                
+                    
                 #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 #nodeCount += 1
 

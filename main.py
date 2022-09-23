@@ -8,9 +8,9 @@ import time
 
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
-mode = "UD"
+#mode = "UD"
 #mode = "4D"
-#mode = "HC"
+mode = "HC"
 #mode = "HC4D"
 
 initialBoard = csv.readCSV('board.csv')
@@ -125,6 +125,7 @@ elif mode == "HC":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
+    temperature = board.dimensions ** 2
 
     if not board.isSafe(board):
         for moves in board.findPossibleMovesForQueen():
@@ -142,7 +143,6 @@ elif mode == "HC":
                 #print('spaceMove', spaceMove)
                 nodeCount += 1
 
-    temperature = board.dimensions ** 2
     while not temperature == 0:
         reStartTimes += 1
         # random start
@@ -193,9 +193,6 @@ elif mode == "HC":
         else:
             #print('trapped')
             trappedTimes += 1
-
-
-
 
     bestSolution = solutions.get()
     cost = bestSolution[0]

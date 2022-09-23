@@ -125,7 +125,7 @@ elif mode == "HC":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
-    temperature = board.dimensions ** 2
+    temperature = (board.dimensions ** 2) * 2
 
     if not board.isSafe(board):
         for moves in board.findPossibleMovesForQueen():

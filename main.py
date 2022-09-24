@@ -32,7 +32,7 @@ if mode == "UD":
             newBoard[moves[0]][moves[1]] = 0
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
-            spaceMove = 1
+            spaceMove = 11/6
             # multiple heuristic by * 100000000 to get greedy
             heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
             #heuristic = tempBoard.findNumQueensAttacking(tempBoard) + (moves[4] ** 2)
@@ -131,12 +131,12 @@ elif mode == "HC":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
-    temperature = (board.dimensions ** 2) * 1000
+    temperature = (board.dimensions ** 2) * 10000
     explorationTime = 0
 
     if not board.isSafe(board):
         # find all possible start position
-        for moves in board.findPossibleMovesForQueen():
+        for moves in board.findPossibleMovesForQueen4D():
             newBoard = deepcopy(board.board)
             newBoard[moves[0]][moves[1]] = 0
             newBoard[moves[2]][moves[3]] = moves[4]
@@ -172,7 +172,7 @@ elif mode == "HC":
             currentH = nextBoard.board[0][0]
             #print('currentH: ', currentH)
             level = nextBoard.level
-            for moves in nextBoard.findPossibleMovesForQueen():
+            for moves in nextBoard.findPossibleMovesForQueen4D():
                 newBoard = deepcopy(nextBoard.board)
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
@@ -218,12 +218,12 @@ elif mode == "HC":
             solutions.put((cost, newBoard, level + 1))
 
             #print('get one solution!')   
-            temperature = (temperature / (1 + (time.time() - startT)))
+            temperature = (temperature * (1- (time.time() - startT)))
             #temperature = temperature / (1 + reStartTimes)
         else:
             #print('trapped!!!!!!!!!!!!!!!!!!!!!!!')
             trappedTimes += 1
-            temperature = temperature / ((1 + (time.time() - startT)))
+            temperature = temperature * ((1- (time.time() - startT)))
             #temperature = temperature / (1 + reStartTimes)
             
             
@@ -241,6 +241,6 @@ elif mode == "HC":
     print('Execution time:', et)
     print('Restart ', reStartTimes, ' times')
     print('Ends early ', trappedTimes, ' times')
-    print('Finished climb:',reStartTimes - trappedTimes, "times" )
+    print('Finished climb that got solution:',reStartTimes - trappedTimes, "times" )
     print('Exploration Time', explorationTime)
     print('Exploitation Time:', et - explorationTime)

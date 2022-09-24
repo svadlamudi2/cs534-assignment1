@@ -3,13 +3,14 @@ from Board import Board
 from queue import PriorityQueue
 from copy import deepcopy
 import time
-
+ 
+print("HELLO");
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
 # mode = "UD"
 mode = "4D"
 
-initialBoard = csv.readCSV('board.csv')
+initialBoard = csv.readCSV('board5.csv')
 
 q = PriorityQueue()
 nodeCount = 0
@@ -26,8 +27,12 @@ if mode == "UD":
             newBoard[moves[0]][moves[1]] = 0
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
+            #print("PRE HEURISTIC")
+            #tempBoard.printBoard();
             # multiple heuristic by * 100000000 to get greedy
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000
+            heuristic = tempBoard.costFromAttackingPairsRecursive()#tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000   #HEURIstic
+            #print("POST HEURISTIC")
+            #tempBoard.printBoard();
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
             nodeCount += 1
 
@@ -43,8 +48,12 @@ if mode == "UD":
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
+                # print("PRE HEURISTIC")
+                # tempBoard.printBoard();
                 # multiple heuristic by * 100000000 to get greedy
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000
+                heuristic = tempBoard.costFromAttackingPairsRecursive();#tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000  # heuristic
+                # print("POST HEURISTIC")
+                # tempBoard.printBoard();
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 nodeCount += 1
 
@@ -55,7 +64,7 @@ if mode == "UD":
             nextBoard.printBoard()
 
         # execution time
-        et = time.time() - st
+        et = time.time() - st 
         print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
 
         print("Final Board, Cost: ", cost)
@@ -72,7 +81,7 @@ elif mode == "4D":
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
             # multiple heuristic by * 100000000 to get greedy
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000
+            heuristic = tempBoard.costFromAttackingPairsRecursive();#tempBoard.findNumQueensAttacking(tempBoard)  #* 100000000  #heuristic
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
             nodeCount += 1
 
@@ -89,7 +98,7 @@ elif mode == "4D":
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
                 # multiple heuristic by * 100000000 to get greedy
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) * 0 # * 100000000
+                heuristic = tempBoard.costFromAttackingPairsRecursive();#tempBoard.findNumQueensAttacking(tempBoard) # * 100000000  # heuristic
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 nodeCount += 1
 
@@ -117,3 +126,9 @@ elif mode == "4D":
         print("Final Level: ", nextBoard.level)
         nextBoard.printBoard()
 
+#Nikki Test
+
+#returnAttackingPairs(mat);
+#print(returnAttackingPairs(mat));
+#(returnAttackingPairs(mat));
+#print(board.costFromAttackingPairsRecursive());

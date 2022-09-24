@@ -131,7 +131,8 @@ elif mode == "HC":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
-    temperature = (board.dimensions ** 2) * 10000
+    temperature = (board.dimensions ** 2) * 1000
+    explorationTime = 0
 
     if not board.isSafe(board):
         # find all possible start position
@@ -152,11 +153,13 @@ elif mode == "HC":
                 nodeCount += 1
 
     while temperature >= 1:
-        print(temperature)
+        #print(temperature)
         f.write(str(temperature))
         f.write('\n')
 
         reStartTimes += 1
+        restart = False
+        #print('restart!')
         # random start
         startT = time.time()
         nextNode = random.choice(startList)
@@ -186,8 +189,15 @@ elif mode == "HC":
 
                 #restart when current cost is already larger than the current best solution
                 currentCost = cost + (moves[4] ** 2)*spaceMove
-                if not solutions.empty() and solutions.queue[0][0] <= currentCost:
+                if (not solutions.empty()) and solutions.queue[0][0] < currentCost:
+                    #print("end early!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    restart = True
+                    explorationTime += (time.time() - startT )
+                    #print(explorationTime)
                     break
+                
+            if restart:
+                break
                 
                 #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 #nodeCount += 1
@@ -205,14 +215,18 @@ elif mode == "HC":
 
         if nextBoard.isSafe(nextBoard):
             newBoard = deepcopy(nextBoard.board)
-            solutions.put((cost, newBoard, level + 1))   
+            solutions.put((cost, newBoard, level + 1))
+
+            #print('get one solution!')   
             temperature = (temperature / (1 + (time.time() - startT)))
             #temperature = temperature / (1 + reStartTimes)
         else:
-            print('trapped')
+            #print('trapped!!!!!!!!!!!!!!!!!!!!!!!')
             trappedTimes += 1
             temperature = temperature / ((1 + (time.time() - startT)))
             #temperature = temperature / (1 + reStartTimes)
+            
+            
 
     bestSolution = solutions.get()
     cost = bestSolution[0]
@@ -224,6 +238,9 @@ elif mode == "HC":
 
     # execution time
     et = time.time() - st
-    print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
+    print('Execution time:', et)
     print('Restart ', reStartTimes, ' times')
-    print('Trapped ', trappedTimes, ' times')
+    print('Ends early ', trappedTimes, ' times')
+    print('Finished climb:',reStartTimes - trappedTimes, "times" )
+    print('Exploration Time', explorationTime)
+    print('Exploitation Time:', et - explorationTime)

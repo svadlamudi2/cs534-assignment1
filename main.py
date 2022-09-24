@@ -13,6 +13,8 @@ st = time.time()
 mode = "HC"
 #mode = "HC4D"
 
+f = open('HillT.txt','w')
+
 initialBoard = csv.readCSV('board5.csv')
 
 q = PriorityQueue()
@@ -129,7 +131,7 @@ elif mode == "HC":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
-    temperature = (board.dimensions ** 2) * 1000
+    temperature = (board.dimensions ** 2) * 10000
 
     if not board.isSafe(board):
         # find all possible start position
@@ -150,9 +152,13 @@ elif mode == "HC":
                 nodeCount += 1
 
     while temperature >= 1:
-        print(temperature)
+        #print(temperature)
+        f.write(str(temperature))
+        f.write('\n')
+
         reStartTimes += 1
         # random start
+        startT = time.time()
         nextNode = random.choice(startList)
         nextBoard = Board(nextNode[1], nextNode[2])
         cost = nextNode[3]
@@ -201,11 +207,14 @@ elif mode == "HC":
         if nextBoard.isSafe(nextBoard):
             newBoard = deepcopy(nextBoard.board)
             solutions.put((cost, newBoard, level + 1))   
-            temperature = temperature / (1 + (time.time() - st))
+            temperature = (temperature / (1 + (time.time() - startT)))
+            #temperature = temperature / (1 + reStartTimes)
         else:
-            #print('trapped')
+            print('trapped')
             trappedTimes += 1
-            temperature = temperature / (1 + (time.time() - st))
+            temperature = temperature / ((1 + (time.time() - startT)))
+            #temperature = temperature / (1 + reStartTimes)
+
 
     bestSolution = solutions.get()
     cost = bestSolution[0]

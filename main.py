@@ -152,7 +152,7 @@ elif mode == "HC":
                 nodeCount += 1
 
     while temperature >= 1:
-        #print(temperature)
+        print(temperature)
         f.write(str(temperature))
         f.write('\n')
 
@@ -186,10 +186,9 @@ elif mode == "HC":
 
                 #restart when current cost is already larger than the current best solution
                 currentCost = cost + (moves[4] ** 2)*spaceMove
-                if not solutions.empty() and solutions.queue[0][0] < currentCost:
+                if not solutions.empty() and solutions.queue[0][0] <= currentCost:
                     break
                 
-                    
                 #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 #nodeCount += 1
 
@@ -215,13 +214,12 @@ elif mode == "HC":
             temperature = temperature / ((1 + (time.time() - startT)))
             #temperature = temperature / (1 + reStartTimes)
 
-
     bestSolution = solutions.get()
     cost = bestSolution[0]
     bestBoard = Board(bestSolution[1], bestSolution[2])
     print("Final Board, Cost: ", cost)
-    print("Final Node Count: ", nodeCount)
-    print("Final Level: ", bestBoard.level)
+    #print("Final Node Count: ", nodeCount)
+    #print("Final Level: ", bestBoard.level)
     bestBoard.printBoard()
 
     # execution time

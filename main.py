@@ -129,7 +129,7 @@ elif mode == "HC":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
-    temperature = (board.dimensions ** 2) 
+    temperature = (board.dimensions ** 2) * 1000
 
     if not board.isSafe(board):
         # find all possible start position
@@ -149,7 +149,8 @@ elif mode == "HC":
                 #print('spaceMove', spaceMove)
                 nodeCount += 1
 
-    while not temperature == 0:
+    while temperature >= 1:
+        print(temperature)
         reStartTimes += 1
         # random start
         nextNode = random.choice(startList)
@@ -176,6 +177,12 @@ elif mode == "HC":
                     list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
                     #print('spaceMove', spaceMove)
                     nodeCount += 1
+
+                #restart when current cost is already larger than the current best solution
+                currentCost = cost + (moves[4] ** 2)*spaceMove
+                if not solutions.empty() and solutions.queue[0][0] < currentCost:
+                    break
+                
                     
                 #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 #nodeCount += 1
@@ -194,10 +201,11 @@ elif mode == "HC":
         if nextBoard.isSafe(nextBoard):
             newBoard = deepcopy(nextBoard.board)
             solutions.put((cost, newBoard, level + 1))   
-            temperature -= 1
+            temperature = temperature / (1 + (time.time() - st))
         else:
             #print('trapped')
             trappedTimes += 1
+            temperature = temperature / (1 + (time.time() - st))
 
     bestSolution = solutions.get()
     cost = bestSolution[0]

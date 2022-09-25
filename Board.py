@@ -2,6 +2,9 @@
 #import numpy as np
 
 
+from copy import deepcopy
+
+
 class Board:
     def __init__(self, array, level):
         self.dimensions = len(array)
@@ -256,7 +259,7 @@ class Board:
 
             # returns a list of the attacking pairs weights
 
-    # update for new layout @ANE
+     # update for new layout @ANE
     def returnAttackingPairs(self):
         pairs = [];
         cost = 0;
@@ -294,6 +297,81 @@ class Board:
 
         return pairs
 
+
+    #takes in matrix
+    def returnAttackingPairs(self, matrix):
+        mat = matrix;
+        listWithIndex = [];
+        pairs = [];
+        cost = 0;
+
+        # traverse the full board
+        for i in range(len(mat)):
+            for j in range(len(mat[i])):
+
+                if mat[i][j] > 0:
+                    # look to the right for attacking pairs
+                    for k in range(j + 1, len(mat[i])):
+                        if mat[i][k] > 0:
+                            listWithIndex.append(mat[i][j]);
+                            listWithIndex.append(mat[i][k]);
+                            listWithIndex.append(i);
+                            listWithIndex.append(j);
+                            listWithIndex.append(i);
+                            listWithIndex.append(k);
+                            pairs.append(listWithIndex);
+                            listWithIndex = [];
+                            #pairs.append([mat[i][j], mat[i][k]]);
+                            # look down for attacking pairs
+                    for k in range(i + 1, len(mat)):
+                        if mat[k][j] > 0:
+                            listWithIndex.append(mat[i][j]);
+                            listWithIndex.append(mat[k][j]);
+                            listWithIndex.append(i);
+                            listWithIndex.append(j);
+                            listWithIndex.append(k);
+                            listWithIndex.append(j);
+                            pairs.append(listWithIndex);
+                            listWithIndex = [];
+                            #pairs.append([mat[i][j], mat[k][j]]);
+
+                            # insert check for diagonal
+                    rcDiff = i - j;
+
+                    # if board[i][j] > 0:
+                    #     print(rcDiff);
+
+                    # checks the right side of the board for diagonal attacking queens
+                    for h in range(0, len(mat)):  # i+1, len(board)):
+                        for k in range(j + 1, len(mat[i])):  # j+1, len(board[i])):
+                            newRCDiff = h - k;
+                            # checks if on the down-right diagonal
+                            if newRCDiff == rcDiff and h != i and k != j and mat[h][k] > 0:
+                                listWithIndex.append(mat[i][j]);
+                                listWithIndex.append(mat[h][k]);
+                                listWithIndex.append(i);
+                                listWithIndex.append(j);
+                                listWithIndex.append(h);
+                                listWithIndex.append(k);
+                                #print(listWithIndex);
+                                pairs.append(listWithIndex);
+                                listWithIndex = [];
+                                #pairs.append([mat[i][j], mat[h][k]]);
+                            # checks if on the up-right diagonal
+                            elif (rcDiff - newRCDiff) % 2 == 0 and h != i and k != j and mat[h][k] > 0:
+                                listWithIndex.append(mat[i][j]);
+                                listWithIndex.append(mat[h][k]);
+                                listWithIndex.append(i);
+                                listWithIndex.append(j);
+                                listWithIndex.append(h);
+                                listWithIndex.append(k);
+                                #print(listWithIndex);
+                                pairs.append(listWithIndex);
+                                listWithIndex = [];
+                                #pairs.append([mat[i][j], mat[h][k]]);
+
+        return pairs
+
     # takes in a list of attacking pairs weights and calculates the estimated cost to solve the position
     # by assuming for each pair of attacking queens will need to have the lower queen move 1 space
     # this heuristic is inadmissible since it is posssible to have one queen that is attacking two other
@@ -305,6 +383,56 @@ class Board:
             cost += pow(min(pair[0], pair[1]), 2);
         print(cost);
         return cost;
+
+    def costFromAttackingPairs(self,  matrix):
+        attackingPairs = self.returnAttackingPairs(self, matrix)
+        cost = 0;
+        for pair in attackingPairs:
+            cost += pow(min(pair[0], pair[1]), 2);
+        print(cost);
+        return cost;
+
+    
+    def costFromAttackingPairsRecursive(self):
+        # print("HERE");
+        matrix = deepcopy(self.board);
+
+
+        #matrix[0][0] = 9;
+        
+        # print("HERE")
+        attackingPairs = self.returnAttackingPairs(matrix); 
+        
+        cost = 0;
+
+        while len(attackingPairs) >= 1:
+            minVal = 100;
+            minX = 0;
+            minY = 0;
+            for pair in attackingPairs:
+                if min(pair[0], pair[1]) < minVal:
+                    
+                    minVal = min(pair[0], pair[1])
+                    if minVal == pair[0]:
+                        minX = pair[2];
+                        minY = pair[3];
+                    else:
+                        minX = pair[4];
+                        minY = pair[5];
+            # print("Coordinates of min");
+            # print(minX, minY);
+            cost += pow(minVal, 2);
+            matrix[minX][minY] = 0;
+            # print("Matrix Values");
+            # print(matrix);
+            # print("Cost");
+            # print(cost);
+            # print("\n");
+            attackingPairs = self.returnAttackingPairs(matrix);
+        #end of while 
+        
+        return cost;
+
 
     def isSafe(self, board):
         if self.findNumQueensAttacking(board) > 0:

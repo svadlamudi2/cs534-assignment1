@@ -16,7 +16,7 @@ mode = "UD"
 
 f = open('HillT.txt','w')
 
-initialBoard = csv.readCSV('board5.csv')
+initialBoard = csv.readCSV('board.csv')
 
 q = PriorityQueue()
 nodeCount = 0
@@ -27,6 +27,7 @@ board.printBoard()
 
 # A* can only move up and down
 if mode == "UD":
+    maxLevel = 0;
     if not board.isSafe(board):
         for moves in board.findPossibleMovesFromBoard():
             newBoard = deepcopy(board.board)
@@ -36,10 +37,11 @@ if mode == "UD":
             #print("PRE HEURISTIC")
             #tempBoard.printBoard();
             # multiple heuristic by * 100000000 to get greedy
-            heuristic = tempBoard.costFromAttackingPairsRecursive()#tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000   #HEURIstic
+            heuristic = tempBoard.findNumQueensAttacking(tempBoard)  # tempBoard.costFromAttackingPairsRecursive() tempBoard.findNumQueensAttacking(tempBoard)
             #print("POST HEURISTIC")
             #tempBoard.printBoard();
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
+            maxLevel += 1
             nodeCount += 1
 
         nextNode = q.get()
@@ -57,10 +59,12 @@ if mode == "UD":
                 # print("PRE HEURISTIC")
                 # tempBoard.printBoard();
                 # multiple heuristic by * 100000000 to get greedy
-                heuristic = tempBoard.costFromAttackingPairsRecursive();#tempBoard.findNumQueensAttacking(tempBoard) * 0 #* 100000000  # heuristic
+                heuristic = tempBoard.findNumQueensAttacking(tempBoard)  # tempBoard.costFromAttackingPairsRecursive() tempBoard.findNumQueensAttacking(tempBoard)
                 # print("POST HEURISTIC")
                 # tempBoard.printBoard();
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
+                if (level + 1) > maxLevel:
+                    maxLevel = level + 1
                 nodeCount += 1
 
             nextNode = q.get()
@@ -74,8 +78,10 @@ if mode == "UD":
         print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
 
         print("Final Board, Cost: ", cost)
-        print("Final Node Count: ", nodeCount)
-        print("Final Level: ", nextBoard.level)
+        print("Number Nodes Explored: ", nodeCount)
+        print("Solution at Level: ", nextBoard.level)
+        print("Max Level Reached: ", maxLevel)
+        print("Effective Branching Factor: ", nodeCount ** (1/maxLevel))
         nextBoard.printBoard()
 
 # A* with 4 directions

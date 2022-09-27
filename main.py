@@ -8,12 +8,14 @@ from queue import PriorityQueue
 from copy import deepcopy
 import time
  
-print("HELLO");
+print("HELLO")
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
+# "UDG" for "greedy best first with queen moving up and down"
+# "HC" is Hill Climbing and "HC4D" is Hill Climbing in 4 directions up, down, left, right
 #mode = "UD"
-mode = "UDG"
-#mode = "4D"
+#mode = "UDG"
+mode = "4D"
 #mode = "HC"
 #mode = "HC4D"
 
@@ -37,12 +39,12 @@ if mode == "UD":
             newBoard[moves[0]][moves[1]] = 0
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
-            #print("PRE HEURISTIC")
-            #tempBoard.printBoard();
-            # multiple heuristic by * 100000000 to get greedy
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard) # tempBoard.costFromAttackingPairsRecursive() tempBoard.findNumQueensAttacking(tempBoard)
-            #print("POST HEURISTIC")
-            #tempBoard.printBoard();
+
+            # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+            # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+            # Replace heuristic calculation function below depending on which heuristic you want
+            heuristic = tempBoard.findNumQueensAttacking(tempBoard)
+
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
             nodeCount += 1
 
@@ -60,10 +62,10 @@ if mode == "UD":
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
-                # print("PRE HEURISTIC")
-                # tempBoard.printBoard();
-                # multiple heuristic by * 100000000 to get greedy
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) # tempBoard.costFromAttackingPairsRecursive() tempBoard.findNumQueensAttacking(tempBoard)
+                # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+                # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+                # Replace heuristic calculation function below depending on which heuristic you want
+                heuristic = tempBoard.findNumQueensAttacking(tempBoard)
                 # print("POST HEURISTIC")
                 # tempBoard.printBoard();
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
@@ -97,7 +99,10 @@ elif mode == "UDG":
             newBoard[move[0]][move[1]] = 0
             newBoard[move[2]][move[3]] = move[4]
             tempBoard = Board(newBoard, 1)
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard) # tempBoard.costFromAttackingPairsRecursive() tempBoard.findNumQueensAttacking(tempBoard)
+            # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+            # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+            # Replace heuristic calculation function below depending on which heuristic you want
+            heuristic = tempBoard.costFromAttackingPairsRecursive()
             q.put((heuristic, newBoard, 1, move[4] ** 2))
             nodeCount += 1
 
@@ -116,10 +121,12 @@ elif mode == "UDG":
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) # tempBoard.costFromAttackingPairsRecursive() tempBoard.findNumQueensAttacking(tempBoard)
-                if heuristic <= minH:
-                    q.put((heuristic, newBoard, level + 1, cost + moves[4] ** 2))
-                    nodeCount += 1
+                # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+                # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+                # Replace heuristic calculation function below depending on which heuristic you want
+                heuristic = tempBoard.costFromAttackingPairsRecursive()
+                q.put((heuristic, newBoard, level + 1, cost + moves[4] ** 2))
+                nodeCount += 1
 
             nextNode = q.get()
             minH = nextNode[0]
@@ -143,14 +150,17 @@ elif mode == "UDG":
 
 # A* with 4 directions
 elif mode == "4D":
+    maxLevel = 0
     if not board.isSafe(board):
         for moves in board.findPossibleMovesFromBoard4D():
             newBoard = deepcopy(board.board)
             newBoard[moves[0]][moves[1]] = 0
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
-            # multiple heuristic by * 100000000 to get greedy
-            heuristic = tempBoard.costFromAttackingPairsRecursive();#tempBoard.findNumQueensAttacking(tempBoard)  #* 100000000  #heuristic
+            # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+            # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+            # Replace heuristic calculation function below depending on which heuristic you want
+            heuristic = tempBoard.findNumQueensAttacking(tempBoard)
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
             nodeCount += 1
 
@@ -161,13 +171,17 @@ elif mode == "4D":
 
         while not nextBoard.isSafe(nextBoard) and not q.empty():
             level = nextBoard.level
+            if level > maxLevel:
+                maxLevel = level
             for moves in nextBoard.findPossibleMovesFromBoard4D():
                 newBoard = deepcopy(nextBoard.board)
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
-                # multiple heuristic by * 100000000 to get greedy
-                heuristic = tempBoard.costFromAttackingPairsRecursive();#tempBoard.findNumQueensAttacking(tempBoard) # * 100000000  # heuristic
+                # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+                # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+                # Replace heuristic calculation function below depending on which heuristic you want
+                heuristic = tempBoard.findNumQueensAttacking(tempBoard)
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 nodeCount += 1
 
@@ -180,10 +194,13 @@ elif mode == "4D":
         # execution time
         et = time.time() - st
         print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
-
         print("Final Board, Cost: ", cost)
-        print("Final Node Count: ", nodeCount)
-        print("Final Level: ", nextBoard.level)
+        print("Number Nodes Explored: ", nodeCount)
+        print("Solution at Level: ", nextBoard.level)
+        if nextBoard.level > maxLevel:
+            maxLevel = nextBoard.level
+        print("Max Level Reached: ", maxLevel)
+        print("Effective Branching Factor: ", nodeCount ** (1 / maxLevel))
         nextBoard.printBoard()
 
 elif mode == "HC":
@@ -204,8 +221,9 @@ elif mode == "HC":
             newBoard[moves[0]][moves[1]] = 0
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
-            #print('location:', moves[0], moves[1])
-            # multiple heuristic by * 100000000 to get greedy
+            # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+            # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+            # Replace heuristic calculation function below depending on which heuristic you want
             heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
             #heuristic = moves[4]
             spaceMove = moves[5]
@@ -240,7 +258,9 @@ elif mode == "HC":
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
-                # multiple heuristic by * 100000000 to get greedy
+                # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+                # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+                # Replace heuristic calculation function below depending on which heuristic you want
                 heuristic = tempBoard.findNumQueensAttacking(tempBoard) # * 100000000
                 #heuristic = moves[4]
                 spaceMove = moves[5]
@@ -327,8 +347,9 @@ elif mode == "HC4D":
             newBoard[moves[0]][moves[1]] = 0
             newBoard[moves[2]][moves[3]] = moves[4]
             tempBoard = Board(newBoard, 1)
-            #print('location:', moves[0], moves[1])
-            # multiple heuristic by * 100000000 to get greedy
+            # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+            # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+            # Replace heuristic calculation function below depending on which heuristic you want
             heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
             #heuristic = moves[4]
             spaceMove = moves[5]
@@ -363,7 +384,9 @@ elif mode == "HC4D":
                 newBoard[moves[0]][moves[1]] = 0
                 newBoard[moves[2]][moves[3]] = moves[4]
                 tempBoard = Board(newBoard, 1)
-                # multiple heuristic by * 100000000 to get greedy
+                # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
+                # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
+                # Replace heuristic calculation function below depending on which heuristic you want
                 heuristic = tempBoard.findNumQueensAttacking(tempBoard) # * 100000000
                 #heuristic = moves[4]
                 spaceMove = moves[5]

@@ -9,6 +9,13 @@ from queue import PriorityQueue
 from copy import deepcopy
 import time
  
+def generateBoard(N,seed):
+    board = [[0] * N for j in range(N)]
+    random.seed(seed)
+    for i in range(N):
+        board[random.randint(0, N-1)][i] = random.randint(1,9)
+    return board
+
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
 # "UDG" for "greedy best first with queen moving up and down"
@@ -19,7 +26,8 @@ mode = "HC"
 
 f = open('HillT.txt','w')
 
-initialBoard = csv.readCSV('4x4.csv')
+# initialBoard = csv.readCSV('4x4.csv')
+initialBoard = generateBoard(6,100)
 
 q = PriorityQueue()
 nodeCount = 0
@@ -59,7 +67,6 @@ if mode == "HC":
                 nodeCount += 1
 
     while temperature >= 1:
-        print(temperature)
         f.write(str(time.time()-st))
         f.write('\t')
         f.write(str(temperature))
@@ -198,7 +205,6 @@ elif mode == "HC4D":
                 nodeCount += 1
 
     while temperature >= 1:
-        print(temperature)
         f.write(str(time.time()-st))
         f.write('\t')
         f.write(str(temperature))

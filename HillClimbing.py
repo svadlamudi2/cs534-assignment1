@@ -9,14 +9,11 @@ from queue import PriorityQueue
 from copy import deepcopy
 import time
  
-print("HELLO")
 st = time.time()
 # "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
 # "UDG" for "greedy best first with queen moving up and down"
 # "HC" is Hill Climbing and "HC4D" is Hill Climbing in 4 directions up, down, left, right
-#mode = "UD"
-#mode = "UDG"
-#mode = "4D"
+
 mode = "HC"
 #mode = "HC4D"
 
@@ -31,180 +28,7 @@ board = Board(initialBoard, 0)
 print("initial Board")
 board.printBoard()
 
-# A* can only move up and down
-if mode == "UD":
-    maxLevel = 0
-    if not board.isSafe(board):
-        for moves in board.findPossibleMovesFromBoard():
-            newBoard = deepcopy(board.board)
-            newBoard[moves[0]][moves[1]] = 0
-            newBoard[moves[2]][moves[3]] = moves[4]
-            tempBoard = Board(newBoard, 1)
-
-            # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
-            # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
-            # Replace heuristic calculation function below depending on which heuristic you want
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard)
-
-            q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
-            nodeCount += 1
-
-        nextNode = q.get()
-        cost = nextNode[3]
-        #print('printing first cost: ', cost)
-        nextBoard = Board(nextNode[1], 1)
-
-        while not nextBoard.isSafe(nextBoard) and not q.empty():
-            level = nextBoard.level
-            if level > maxLevel:
-                maxLevel = level
-            for moves in nextBoard.findPossibleMovesFromBoard():
-                newBoard = deepcopy(nextBoard.board)
-                newBoard[moves[0]][moves[1]] = 0
-                newBoard[moves[2]][moves[3]] = moves[4]
-                tempBoard = Board(newBoard, 1)
-                # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
-                # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
-                # Replace heuristic calculation function below depending on which heuristic you want
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard)
-                # print("POST HEURISTIC")
-                # tempBoard.printBoard();
-                q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
-                nodeCount += 1
-
-            nextNode = q.get()
-            cost = nextNode[3]
-            nextBoard = Board(nextNode[1], nextNode[2])
-            print("printing next board with cost: ", cost)
-            nextBoard.printBoard()
-
-        # execution time
-        et = time.time() - st 
-        print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
-        print("Final Board, Cost: ", cost)
-        print("Number Nodes Explored: ", nodeCount)
-        print("Solution at Level: ", nextBoard.level)
-        if nextBoard.level > maxLevel:
-            maxLevel = nextBoard.level
-        print("Max Level Reached: ", maxLevel)
-        print("Effective Branching Factor: ", nodeCount ** (1/maxLevel))
-        nextBoard.printBoard()
-
-
-elif mode == "UDG":
-    maxLevel = 0
-    minH = 100000000000
-    if not board.isSafe(board):
-        for move in board.findPossibleMovesFromBoard():
-            newBoard = deepcopy(board.board)
-            newBoard[move[0]][move[1]] = 0
-            newBoard[move[2]][move[3]] = move[4]
-            tempBoard = Board(newBoard, 1)
-            # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
-            # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
-            # Replace heuristic calculation function below depending on which heuristic you want
-            heuristic = tempBoard.costFromAttackingPairsRecursive()
-            q.put((heuristic, newBoard, 1, move[4] ** 2))
-            nodeCount += 1
-
-        nextNode = q.get()
-        minH = nextNode[0]
-        cost = nextNode[3]
-
-        nextBoard = Board(nextNode[1], 1)
-
-        while not nextBoard.isSafe(nextBoard) and not q.empty():
-            level = nextBoard.level
-            if level > maxLevel:
-                maxLevel = level
-            for moves in nextBoard.findPossibleMovesFromBoard():
-                newBoard = deepcopy(nextBoard.board)
-                newBoard[moves[0]][moves[1]] = 0
-                newBoard[moves[2]][moves[3]] = moves[4]
-                tempBoard = Board(newBoard, 1)
-                # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
-                # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
-                # Replace heuristic calculation function below depending on which heuristic you want
-                heuristic = tempBoard.costFromAttackingPairsRecursive()
-                q.put((heuristic, newBoard, level + 1, cost + moves[4] ** 2))
-                nodeCount += 1
-
-            nextNode = q.get()
-            minH = nextNode[0]
-            cost = nextNode[3]
-            nextBoard = Board(nextNode[1], nextNode[2])
-            print("printing next board with cost: ", cost)
-            nextBoard.printBoard()
-
-        # execution time
-        et = time.time() - st
-        print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
-        print("Final Board, Cost: ", cost)
-        print("Number Nodes Explored: ", nodeCount)
-        print("Solution at Level: ", nextBoard.level)
-        if nextBoard.level > maxLevel:
-            maxLevel = nextBoard.level
-        print("Max Level Reached: ", maxLevel)
-        print("Effective Branching Factor: ", nodeCount ** (1/maxLevel))
-        nextBoard.printBoard()
-
-
-# A* with 4 directions
-elif mode == "4D":
-    maxLevel = 0
-    if not board.isSafe(board):
-        for moves in board.findPossibleMovesFromBoard4D():
-            newBoard = deepcopy(board.board)
-            newBoard[moves[0]][moves[1]] = 0
-            newBoard[moves[2]][moves[3]] = moves[4]
-            tempBoard = Board(newBoard, 1)
-            # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
-            # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
-            # Replace heuristic calculation function below depending on which heuristic you want
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard)
-            q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
-            nodeCount += 1
-
-        nextNode = q.get()
-        cost = nextNode[3]
-        #print('printing first cost: ', cost)
-        nextBoard = Board(nextNode[1], 1)
-
-        while not nextBoard.isSafe(nextBoard) and not q.empty():
-            level = nextBoard.level
-            if level > maxLevel:
-                maxLevel = level
-            for moves in nextBoard.findPossibleMovesFromBoard4D():
-                newBoard = deepcopy(nextBoard.board)
-                newBoard[moves[0]][moves[1]] = 0
-                newBoard[moves[2]][moves[3]] = moves[4]
-                tempBoard = Board(newBoard, 1)
-                # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
-                # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
-                # Replace heuristic calculation function below depending on which heuristic you want
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard)
-                q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
-                nodeCount += 1
-
-            nextNode = q.get()
-            cost = nextNode[3]
-            nextBoard = Board(nextNode[1], nextNode[2])
-            #print("printing next board with cost: ", cost)
-            #nextBoard.printBoard()
-
-        # execution time
-        et = time.time() - st
-        print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(et)))
-        print("Final Board, Cost: ", cost)
-        print("Number Nodes Explored: ", nodeCount)
-        print("Solution at Level: ", nextBoard.level)
-        if nextBoard.level > maxLevel:
-            maxLevel = nextBoard.level
-        print("Max Level Reached: ", maxLevel)
-        print("Effective Branching Factor: ", nodeCount ** (1 / maxLevel))
-        nextBoard.printBoard()
-
-elif mode == "HC":
+if mode == "HC":
     # num of attacking queens as h
     maxH = board.dimensions
     startList = []
@@ -351,7 +175,7 @@ elif mode == "HC4D":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
-    temperature = (board.dimensions ** 2) * 10000
+    temperature = (board.dimensions ** 2)
     explorationTime = 0
 
     if not board.isSafe(board):
@@ -375,6 +199,8 @@ elif mode == "HC4D":
 
     while temperature >= 1:
         print(temperature)
+        f.write(str(time.time()-st))
+        f.write('\t')
         f.write(str(temperature))
         f.write('\n')
 
@@ -404,11 +230,12 @@ elif mode == "HC4D":
                 heuristic = tempBoard.findNumQueensAttacking(tempBoard) # * 100000000
                 #heuristic = moves[4]
                 spaceMove = moves[5]
-                list.clear
-                if heuristic <= currentH:
-                    list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
-                    #print('spaceMove', spaceMove)
-                    nodeCount += 1
+                
+                # if heuristic < currentH:
+                list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
+                #print('spaceMove', spaceMove)
+                nodeCount += 1
+
 
                 #restart when current cost is already larger than the current best solution
                 currentCost = cost + (moves[4] ** 2)*spaceMove
@@ -425,11 +252,21 @@ elif mode == "HC4D":
                 #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 #nodeCount += 1
 
+
             if len(list) != 0:
                 nextNode = random.choice(list)
+                if nextNode[0] < currentH:
+                    nextBoard = Board(nextNode[1], nextNode[2])
+                else:
+                    if  math.exp(-(currentH - nextNode[0]) / temperature):
+                        nextBoard = Board(nextNode[1], nextNode[2])
+
             else:
                 nextBoard = Board(nextNode[1], nextNode[2])
                 break
+        
+            list.clear
+
 
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
@@ -441,12 +278,12 @@ elif mode == "HC4D":
             solutions.put((cost, newBoard, level + 1))
 
             #print('get one solution!')   
-            temperature = (temperature * (1- (time.time() - startT)))
+            temperature -= temperature * 0.1
             #temperature = temperature / (1 + reStartTimes)
         else:
             #print('trapped!!!!!!!!!!!!!!!!!!!!!!!')
             trappedTimes += 1
-            temperature = temperature * ((1- (time.time() - startT)))
+            temperature = temperature / ((1 + (time.time() - startT)))
             #temperature = temperature / (1 + reStartTimes)
             
             

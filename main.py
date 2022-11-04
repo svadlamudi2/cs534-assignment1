@@ -349,7 +349,7 @@ elif mode == "HC4D":
     solutions = PriorityQueue()
     reStartTimes = 0
     trappedTimes = 0
-    temperature = (board.dimensions ** 2) * 10000
+    temperature = (board.dimensions ** 2)
     explorationTime = 0
 
     if not board.isSafe(board):
@@ -372,7 +372,8 @@ elif mode == "HC4D":
                 nodeCount += 1
 
     while temperature >= 1:
-        print(temperature)
+        f.write(str(time.time()-st))
+        f.write('\t')
         f.write(str(temperature))
         f.write('\n')
 
@@ -402,11 +403,12 @@ elif mode == "HC4D":
                 heuristic = tempBoard.findNumQueensAttacking(tempBoard) # * 100000000
                 #heuristic = moves[4]
                 spaceMove = moves[5]
-                list.clear
-                if heuristic <= currentH:
-                    list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
-                    #print('spaceMove', spaceMove)
-                    nodeCount += 1
+                
+                # if heuristic < currentH:
+                list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
+                #print('spaceMove', spaceMove)
+                nodeCount += 1
+
 
                 #restart when current cost is already larger than the current best solution
                 currentCost = cost + (moves[4] ** 2)*spaceMove
@@ -423,11 +425,21 @@ elif mode == "HC4D":
                 #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 #nodeCount += 1
 
+
             if len(list) != 0:
                 nextNode = random.choice(list)
+                if nextNode[0] < currentH:
+                    nextBoard = Board(nextNode[1], nextNode[2])
+                else:
+                    if  math.exp(-(currentH - nextNode[0]) / temperature):
+                        nextBoard = Board(nextNode[1], nextNode[2])
+
             else:
                 nextBoard = Board(nextNode[1], nextNode[2])
                 break
+        
+            list.clear
+
 
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
@@ -439,12 +451,12 @@ elif mode == "HC4D":
             solutions.put((cost, newBoard, level + 1))
 
             #print('get one solution!')   
-            temperature = (temperature * (1- (time.time() - startT)))
+            temperature -= temperature * 0.1
             #temperature = temperature / (1 + reStartTimes)
         else:
             #print('trapped!!!!!!!!!!!!!!!!!!!!!!!')
             trappedTimes += 1
-            temperature = temperature * ((1- (time.time() - startT)))
+            temperature = temperature / ((1 + (time.time() - startT)))
             #temperature = temperature / (1 + reStartTimes)
             
             

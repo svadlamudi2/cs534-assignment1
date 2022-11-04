@@ -229,5 +229,4 @@ def tallyResults(N):
     print(resultsGreedy)
     print(resultsAStar)
 
-tallyResults(5)
 

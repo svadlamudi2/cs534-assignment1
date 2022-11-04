@@ -16,27 +16,16 @@ def generateBoard(N,seed):
         board[random.randint(0, N-1)][i] = random.randint(1,9)
     return board
 
-st = time.time()
-# "UD" for moving queen up and down. "4D" for 4 directions up, down, left, right
-# "UDG" for "greedy best first with queen moving up and down"
-# "HC" is Hill Climbing and "HC4D" is Hill Climbing in 4 directions up, down, left, right
+def hillClimb(initialBoard):
+    st = time.time()
 
-mode = "HC"
-#mode = "HC4D"
+    f = open('HillT.txt', 'w')
+    nodeCount = 0
 
-f = open('HillT.txt','w')
+    board = Board(initialBoard, 0)
+    print("initial Board")
+    board.printBoard()
 
-# initialBoard = csv.readCSV('4x4.csv')
-initialBoard = generateBoard(7,100)
-
-q = PriorityQueue()
-nodeCount = 0
-
-board = Board(initialBoard, 0)
-print("initial Board")
-board.printBoard()
-
-if mode == "HC":
     # num of attacking queens as h
     maxH = board.dimensions
     startList = []
@@ -57,35 +46,35 @@ if mode == "HC":
             # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
             # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
             # Replace heuristic calculation function below depending on which heuristic you want
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
-            #heuristic = moves[4]
+            heuristic = tempBoard.findNumQueensAttacking(tempBoard)  # * 100000000
+            # heuristic = moves[4]
             spaceMove = moves[5]
-            #pick better or equal position than now
+            # pick better or equal position than now
             if heuristic <= maxH:
-                startList.append((heuristic, newBoard, 1, (moves[4] ** 2)*spaceMove, spaceMove))
-                #print('spaceMove', spaceMove)
+                startList.append((heuristic, newBoard, 1, (moves[4] ** 2) * spaceMove, spaceMove))
+                # print('spaceMove', spaceMove)
                 nodeCount += 1
 
     while temperature >= 1:
-        f.write(str(time.time()-st))
+        f.write(str(time.time() - st))
         f.write('\t')
         f.write(str(temperature))
         f.write('\n')
 
         reStartTimes += 1
         restart = False
-        #print('restart!')
+        # print('restart!')
         # random start
         startT = time.time()
         nextNode = random.choice(startList)
         nextBoard = Board(nextNode[1], nextNode[2])
         cost = nextNode[3]
 
-        #nextBoard.printBoard()
-        
+        # nextBoard.printBoard()
+
         while not nextBoard.isSafe(nextBoard):
             currentH = nextBoard.board[0][0]
-            #print('currentH: ', currentH)
+            # print('currentH: ', currentH)
             level = nextBoard.level
             for moves in nextBoard.findPossibleMovesForQueen():
                 newBoard = deepcopy(nextBoard.board)
@@ -95,73 +84,68 @@ if mode == "HC":
                 # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
                 # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
                 # Replace heuristic calculation function below depending on which heuristic you want
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) # * 100000000
-                #heuristic = moves[4]
+                heuristic = tempBoard.findNumQueensAttacking(tempBoard)  # * 100000000
+                # heuristic = moves[4]
                 spaceMove = moves[5]
-                
+
                 # if heuristic < currentH:
-                list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
-                #print('spaceMove', spaceMove)
+                list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2) * spaceMove, spaceMove))
+                # print('spaceMove', spaceMove)
                 nodeCount += 1
 
-
-                #restart when current cost is already larger than the current best solution
-                currentCost = cost + (moves[4] ** 2)*spaceMove
+                # restart when current cost is already larger than the current best solution
+                currentCost = cost + (moves[4] ** 2) * spaceMove
                 if (not solutions.empty()) and solutions.queue[0][0] < currentCost:
-                    #print("end early!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    # print("end early!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     restart = True
-                    explorationTime += (time.time() - startT )
-                    #print(explorationTime)
+                    explorationTime += (time.time() - startT)
+                    # print(explorationTime)
                     break
-                
+
             if restart:
                 break
-                
-                #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
-                #nodeCount += 1
 
+                # q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
+                # nodeCount += 1
 
             if len(list) != 0:
                 nextNode = random.choice(list)
                 if nextNode[0] < currentH:
                     nextBoard = Board(nextNode[1], nextNode[2])
                 else:
-                    if  math.exp(-(currentH - nextNode[0]) / temperature):
+                    if math.exp(-(currentH - nextNode[0]) / temperature):
                         nextBoard = Board(nextNode[1], nextNode[2])
 
             else:
                 nextBoard = Board(nextNode[1], nextNode[2])
                 break
-        
-            list.clear
 
+            list.clear
 
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
-            #print("printing next board with cost: ", cost)
-            #nextBoard.printBoard()
+            # print("printing next board with cost: ", cost)
+            # nextBoard.printBoard()
 
         if nextBoard.isSafe(nextBoard):
             newBoard = deepcopy(nextBoard.board)
             solutions.put((cost, newBoard, level + 1))
 
-            #print('get one solution!')   
+            # print('get one solution!')
             temperature -= temperature * 0.1
-            #temperature = temperature / (1 + reStartTimes)
+            # temperature = temperature / (1 + reStartTimes)
         else:
-            #print('trapped!!!!!!!!!!!!!!!!!!!!!!!')
+            # print('trapped!!!!!!!!!!!!!!!!!!!!!!!')
             trappedTimes += 1
             temperature = temperature / ((1 + (time.time() - startT)))
-            #temperature = temperature / (1 + reStartTimes)
-            
-            
+            # temperature = temperature / (1 + reStartTimes)
 
     bestSolution = solutions.get()
     cost = bestSolution[0]
     bestBoard = Board(bestSolution[1], bestSolution[2])
     print("Final Board, Cost: ", cost)
-    #print("Final Node Count: ", nodeCount)
-    #print("Final Level: ", bestBoard.level)
+    # print("Final Node Count: ", nodeCount)
+    # print("Final Level: ", bestBoard.level)
     bestBoard.printBoard()
 
     # execution time
@@ -169,12 +153,24 @@ if mode == "HC":
     print('Execution time:', et)
     print('Restart ', reStartTimes, ' times')
     print('Ends early ', trappedTimes, ' times')
-    print('Finished climb that got solution:',reStartTimes - trappedTimes, "times" )
+    print('Finished climb that got solution:', reStartTimes - trappedTimes, "times")
     print('Exploration Time', explorationTime)
     print('Exploitation Time:', et - explorationTime)
 
 
-elif mode == "HC4D":
+
+
+def hillClimb4D(initialBoard):
+    st = time.time()
+
+    f = open('HillT.txt', 'w')
+
+    nodeCount = 0
+
+    board = Board(initialBoard, 0)
+    print("initial Board")
+    board.printBoard()
+
     # num of attacking queens as h
     maxH = board.dimensions
     startList = []
@@ -195,35 +191,35 @@ elif mode == "HC4D":
             # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
             # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
             # Replace heuristic calculation function below depending on which heuristic you want
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard) #* 100000000
-            #heuristic = moves[4]
+            heuristic = tempBoard.findNumQueensAttacking(tempBoard)  # * 100000000
+            # heuristic = moves[4]
             spaceMove = moves[5]
-            #pick better or equal position than now
+            # pick better or equal position than now
             if heuristic <= maxH:
-                startList.append((heuristic, newBoard, 1, (moves[4] ** 2)*spaceMove, spaceMove))
-                #print('spaceMove', spaceMove)
+                startList.append((heuristic, newBoard, 1, (moves[4] ** 2) * spaceMove, spaceMove))
+                # print('spaceMove', spaceMove)
                 nodeCount += 1
 
     while temperature >= 1:
-        f.write(str(time.time()-st))
+        f.write(str(time.time() - st))
         f.write('\t')
         f.write(str(temperature))
         f.write('\n')
 
         reStartTimes += 1
         restart = False
-        #print('restart!')
+        # print('restart!')
         # random start
         startT = time.time()
         nextNode = random.choice(startList)
         nextBoard = Board(nextNode[1], nextNode[2])
         cost = nextNode[3]
 
-        #nextBoard.printBoard()
-        
+        # nextBoard.printBoard()
+
         while not nextBoard.isSafe(nextBoard):
             currentH = nextBoard.board[0][0]
-            #print('currentH: ', currentH)
+            # print('currentH: ', currentH)
             level = nextBoard.level
             for moves in nextBoard.findPossibleMovesForQueen4D():
                 newBoard = deepcopy(nextBoard.board)
@@ -233,73 +229,68 @@ elif mode == "HC4D":
                 # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
                 # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
                 # Replace heuristic calculation function below depending on which heuristic you want
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard) # * 100000000
-                #heuristic = moves[4]
+                heuristic = tempBoard.findNumQueensAttacking(tempBoard)  # * 100000000
+                # heuristic = moves[4]
                 spaceMove = moves[5]
-                
+
                 # if heuristic < currentH:
-                list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2)*spaceMove, spaceMove))
-                #print('spaceMove', spaceMove)
+                list.append((heuristic, newBoard, level + 1, cost + (moves[4] ** 2) * spaceMove, spaceMove))
+                # print('spaceMove', spaceMove)
                 nodeCount += 1
 
-
-                #restart when current cost is already larger than the current best solution
-                currentCost = cost + (moves[4] ** 2)*spaceMove
+                # restart when current cost is already larger than the current best solution
+                currentCost = cost + (moves[4] ** 2) * spaceMove
                 if (not solutions.empty()) and solutions.queue[0][0] < currentCost:
-                    #print("end early!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    # print("end early!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     restart = True
-                    explorationTime += (time.time() - startT )
-                    #print(explorationTime)
+                    explorationTime += (time.time() - startT)
+                    # print(explorationTime)
                     break
-                
+
             if restart:
                 break
-                
-                #q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
-                #nodeCount += 1
 
+                # q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
+                # nodeCount += 1
 
             if len(list) != 0:
                 nextNode = random.choice(list)
                 if nextNode[0] < currentH:
                     nextBoard = Board(nextNode[1], nextNode[2])
                 else:
-                    if  math.exp(-(currentH - nextNode[0]) / temperature):
+                    if math.exp(-(currentH - nextNode[0]) / temperature):
                         nextBoard = Board(nextNode[1], nextNode[2])
 
             else:
                 nextBoard = Board(nextNode[1], nextNode[2])
                 break
-        
-            list.clear
 
+            list.clear
 
             cost = nextNode[3]
             nextBoard = Board(nextNode[1], nextNode[2])
-            #print("printing next board with cost: ", cost)
-            #nextBoard.printBoard()
+            # print("printing next board with cost: ", cost)
+            # nextBoard.printBoard()
 
         if nextBoard.isSafe(nextBoard):
             newBoard = deepcopy(nextBoard.board)
             solutions.put((cost, newBoard, level + 1))
 
-            #print('get one solution!')   
+            # print('get one solution!')
             temperature -= temperature * 0.1
-            #temperature = temperature / (1 + reStartTimes)
+            # temperature = temperature / (1 + reStartTimes)
         else:
-            #print('trapped!!!!!!!!!!!!!!!!!!!!!!!')
+            # print('trapped!!!!!!!!!!!!!!!!!!!!!!!')
             trappedTimes += 1
             temperature = temperature / ((1 + (time.time() - startT)))
-            #temperature = temperature / (1 + reStartTimes)
-            
-            
+            # temperature = temperature / (1 + reStartTimes)
 
     bestSolution = solutions.get()
     cost = bestSolution[0]
     bestBoard = Board(bestSolution[1], bestSolution[2])
     print("Final Board, Cost: ", cost)
-    #print("Final Node Count: ", nodeCount)
-    #print("Final Level: ", bestBoard.level)
+    # print("Final Node Count: ", nodeCount)
+    # print("Final Level: ", bestBoard.level)
     bestBoard.printBoard()
 
     # execution time
@@ -307,6 +298,6 @@ elif mode == "HC4D":
     print('Execution time:', et)
     print('Restart ', reStartTimes, ' times')
     print('Ends early ', trappedTimes, ' times')
-    print('Finished climb that got solution:',reStartTimes - trappedTimes, "times" )
+    print('Finished climb that got solution:', reStartTimes - trappedTimes, "times")
     print('Exploration Time', explorationTime)
     print('Exploitation Time:', et - explorationTime)

@@ -148,7 +148,7 @@ def tallyResults4D(N):
     csvFile = csv.writer(file)
     resultsGreedy = []
     resultsAStar = []
-    for j in range(4,N):
+    for j in range(4,10):
         solvedG = 0
         totalTimeG = 0
         totalNodeCountSolvedG = 0
@@ -195,6 +195,7 @@ def tallyResults4D(N):
         avgCostG = 0
         avgLevelG = 0
         avgNodeCountNotSolvedG = 0
+        avgBranchingFactorG = 0
         if solvedG != 0:
             avgTimeG = totalTimeG/solvedG
             avgNodeCountSolvedG = totalNodeCountSolvedG/solvedG
@@ -212,6 +213,7 @@ def tallyResults4D(N):
         avgCostA = 0
         avgLevelA = 0
         avgNodeCountNotSolvedA = 0
+        avgBranchingFactorA = 0
         if solvedA != 0:
             avgTimeA = totalTimeA / solvedA
             avgNodeCountSolvedA = totalNodeCountSolvedA / solvedA
@@ -227,5 +229,4 @@ def tallyResults4D(N):
     print(resultsGreedy)
     print(resultsAStar)
 
-tallyResults4D(5)
 

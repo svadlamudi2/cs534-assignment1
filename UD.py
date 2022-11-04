@@ -195,6 +195,7 @@ def tallyResults(N):
         avgCostG = 0
         avgLevelG = 0
         avgNodeCountNotSolvedG = 0
+        avgBranchingFactorG = 0
         if solvedG != 0:
             avgTimeG = totalTimeG/solvedG
             avgNodeCountSolvedG = totalNodeCountSolvedG/solvedG
@@ -212,6 +213,7 @@ def tallyResults(N):
         avgCostA = 0
         avgLevelA = 0
         avgNodeCountNotSolvedA = 0
+        avgBranchingFactorA = 0
         if solvedA != 0:
             avgTimeA = totalTimeA / solvedA
             avgNodeCountSolvedA = totalNodeCountSolvedA / solvedA

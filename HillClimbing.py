@@ -27,7 +27,7 @@ mode = "HC"
 f = open('HillT.txt','w')
 
 # initialBoard = csv.readCSV('4x4.csv')
-initialBoard = generateBoard(6,100)
+initialBoard = generateBoard(7,100)
 
 q = PriorityQueue()
 nodeCount = 0

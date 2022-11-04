@@ -15,8 +15,8 @@ st = time.time()
 # "HC" is Hill Climbing and "HC4D" is Hill Climbing in 4 directions up, down, left, right
 #mode = "UD"
 #mode = "UDG"
-mode = "4D"
-#mode = "HC"
+#mode = "4D"
+mode = "HC"
 #mode = "HC4D"
 
 f = open('HillT.txt','w')
@@ -43,7 +43,7 @@ if mode == "UD":
             # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
             # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
             # Replace heuristic calculation function below depending on which heuristic you want
-            heuristic = tempBoard.findNumQueensAttacking(tempBoard)
+            heuristic = tempBoard.costFromAttackingPairsRecursive()
 
             q.put((heuristic + (moves[4] ** 2), newBoard, 1, moves[4] ** 2))
             nodeCount += 1
@@ -65,8 +65,8 @@ if mode == "UD":
                 # Heuristic 1: tempBoard.findNumQueensAttacking(tempBoard)
                 # Heuristic 2: tempBoard.costFromAttackingPairsRecursive()
                 # Replace heuristic calculation function below depending on which heuristic you want
-                heuristic = tempBoard.findNumQueensAttacking(tempBoard)
-                # print("POST HEURISTIC")
+                heuristic = tempBoard.costFromAttackingPairsRecursive()
+                #print(heuristic)
                 # tempBoard.printBoard();
                 q.put((cost + heuristic + (moves[4] ** 2), newBoard, level + 1, cost + moves[4] ** 2))
                 nodeCount += 1
@@ -234,7 +234,7 @@ elif mode == "HC":
                 nodeCount += 1
 
     while temperature >= 1:
-        print(temperature)
+        #print(temperature)
         f.write(str(temperature))
         f.write('\n')
 
@@ -275,7 +275,7 @@ elif mode == "HC":
                 if (not solutions.empty()) and solutions.queue[0][0] < currentCost:
                     #print("end early!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     restart = True
-                    explorationTime += (time.time() - startT )
+                    explorationTime += (time.time() - startT)
                     #print(explorationTime)
                     break
                 

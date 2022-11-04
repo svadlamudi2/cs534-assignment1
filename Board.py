@@ -16,11 +16,12 @@ class Board:
             print(row)
 
     def findAllQueens(self):
-        queenLocations = [[0] * 3 for i in range(self.dimensions)]
+        queenLocations = []
         counter = 0
         for i in range(0, self.dimensions):
             for j in range(0, self.dimensions):
                 if self.board[i][j] > 0:
+                    queenLocations.append([i,j,self.board[i][j]])
                     queenLocations[counter][0] = i
                     queenLocations[counter][1] = j
                     queenLocations[counter][2] = self.board[i][j]
@@ -439,3 +440,42 @@ class Board:
             return False
         else:
             return True
+
+    def goodHeuristic(self):
+        queensArray = self.findAllQueens()
+        aQueens = []
+        for location in queensArray:
+            if self.findHorizontalAttack(location[0]) or self.findVerticalAttack(location[1]) or self.findDiagonalAttack(location[0], location[1]):
+                aQueens.append(location[2])
+        if not aQueens:
+            return 0
+        return max(aQueens)**2
+
+    def calculateFinalCost(self, initialBoard):
+        startQueens = initialBoard.findAllQueens()
+        startQueens.sort(key=sortQueens)
+        for queen in startQueens:
+            queen.append(False)
+
+        finalQueens = self.findAllQueens()
+        finalQueens.sort(key=sortQueens)
+        for queen in finalQueens:
+            queen.append(False)
+
+        cost = 0
+        for startQueen in startQueens:
+            for finalQueen in finalQueens:
+                if (startQueen[2] == finalQueen[2] and startQueen[3] == False and finalQueen[3] == False):
+                    newDistance= distance(finalQueen[1],finalQueen[0],startQueen[1],startQueen[0])
+                    cost += (newDistance * (finalQueen[2]**2))
+                    finalQueen[3] = True
+                    startQueen[3] = True
+
+        return cost
+
+def distance(queen1x, queen1y, queen2x, queen2y):
+    distance = abs(queen1x-queen2x) + abs(queen1y-queen2y)
+    return distance
+
+def sortQueens(list):
+    return list[1]
